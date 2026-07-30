@@ -27,20 +27,6 @@ const loginUser = catchAsync(
 
     const { accessToken, refreshToken } = await authService.loginUser(payload);
 
-    res.cookie("accesstoken", accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
-    res.cookie("refreshtoken", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.OK,

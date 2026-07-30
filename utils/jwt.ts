@@ -1,14 +1,8 @@
 import jwt, { JwtPayload, SignOptions } from "jsonwebtoken"
 
-// const createToken = (
-//   payload: JwtPayload,
-//   secret: string,
-//   expiresIn: SignOptions,
-// ) => {
-//   const token = jwt.sign(payload, secret, expiresIn);
-
-//   return token;
-// };
+const createToken = (payload: JwtPayload, secret: string, expiresIn: SignOptions) => {
+  return jwt.sign(payload, secret, expiresIn)
+}
 
 const verifyToken = (token: string, secret: string) => {
   try {
@@ -27,6 +21,6 @@ const verifyToken = (token: string, secret: string) => {
 }
 
 export const jwtUtils = {
-  //   createToken,
+  createToken,
   verifyToken,
 }

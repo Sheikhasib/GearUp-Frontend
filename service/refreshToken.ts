@@ -2,6 +2,7 @@
 
 import { jwtUtils } from "@/utils/jwt"
 import { cookies } from "next/headers"
+import type { JwtPayload, SignOptions } from "jsonwebtoken"
 
 export const getNewAccessToken = async () => {
   const cookieStore = await cookies()
@@ -9,8 +10,6 @@ export const getNewAccessToken = async () => {
   const refreshToken = cookieStore.get("refreshToken")?.value || null
 
   if (!refreshToken) {
-    // throw new Error("User Not Logged In!");
-
     return {
       success: false,
       message: "Refresh token not found!",
@@ -22,18 +21,17 @@ export const getNewAccessToken = async () => {
     {
       method: "POST",
       headers: {
-        Cookie: `refreshToken=${refreshToken}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({ refreshToken }),
       cache: "no-cache",
     }
   )
 
   const result = await res.json()
-
   return result
 }
 
-// If we lose our access token while doing data fetch, then we can get our access token back through the refresh token and complete the data fetch.
 export const isAccessTokenExist = async () => {
   const cookieStore = await cookies()
   let accessToken = cookieStore.get("accessToken")?.value || null
@@ -41,11 +39,6 @@ export const isAccessTokenExist = async () => {
 
   if (!accessToken && !refreshToken) {
     throw new Error("User Not Logged In!")
-
-    // return {
-    //     success: false,
-    //     message: "User not logged in!"
-    // }
   }
 
   const decodedAccessToken = accessToken
@@ -60,10 +53,9 @@ export const isAccessTokenExist = async () => {
     : null
 
   if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
-    //access token has expired but refresh token is valid, get new access token from backend
     const result = await getNewAccessToken()
 
-    if (result.success) {
+    if (result.success && result.data) {
       const newAccessToken = result.data.accessToken
 
       cookieStore.set("accessToken", newAccessToken, {

@@ -5,22 +5,20 @@ import { cookies } from "next/headers"
 export const getMe = async () => {
   const cookieStore = await cookies()
 
-  const accessToken = cookieStore.get("accessToken")?.value // to get a single value from cookies we need to use "cookies().get().value"
+  const accessToken = cookieStore.get("accessToken")?.value
 
   if (!accessToken) {
-    // throw new Error("Unauthorized User. Please Login with valid credentials.");
-
     return {
       success: false,
       message: "Unauthorized User. Please Login with valid credentials.",
     }
   }
 
-  const res = await fetch(`${process.env.BACKEND_API_URL}/api/users/me`, {
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Cookie: `accessToken=${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
     cache: "no-cache",
     next: {
@@ -30,8 +28,6 @@ export const getMe = async () => {
   })
 
   const result = await res.json()
-
-  console.log(result)
 
   return result
 }

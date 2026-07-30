@@ -3,6 +3,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { QueryProvider } from "@/app/providers/query-provider"
 import { cn } from "@/lib/utils"
+import { Toaster } from "sonner"
 import type { ReactNode } from "react"
 
 const geistHeading = Geist({ subsets: ["latin"], variable: "--font-heading" })
@@ -21,7 +22,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body>
         <QueryProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            {children}
+            <Toaster richColors closeButton />
+          </ThemeProvider>
         </QueryProvider>
       </body>
     </html>

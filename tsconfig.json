@@ -31,5 +31,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "temp_example_back", "temp_example_front", "temp_gearup_backend"]
 }

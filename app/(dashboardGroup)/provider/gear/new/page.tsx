@@ -55,7 +55,7 @@ export default function AddGearPage() {
 
     createGear(form, {
       onSuccess: () => {
-        router.push("/dashboard/provider")
+        router.push("/provider-dashboard")
       },
     })
   }
