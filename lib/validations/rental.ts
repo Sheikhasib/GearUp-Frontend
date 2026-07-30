@@ -7,8 +7,8 @@ export const rentNowSchema = z
     endDate: z.string().datetime(),
     quantity: z.number().int().min(1),
   })
-  .refine((data) => new Date(data.startDate) < new Date(data.endDate), {
-    message: "Start date must be before end date",
+  .refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
+    message: "Start date must be on or before end date",
     path: ["endDate"],
   })
   .refine((data) => {

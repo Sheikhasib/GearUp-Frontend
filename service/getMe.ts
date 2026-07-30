@@ -18,7 +18,7 @@ export const getMe = async () => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Cookie: `accessToken=${accessToken}`,
     },
     cache: "no-cache",
     next: {

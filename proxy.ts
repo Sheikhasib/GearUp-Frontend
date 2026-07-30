@@ -4,7 +4,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { jwtUtils } from "./utils/jwt"
 import type { JwtPayload } from "jsonwebtoken"
-import { getPaymentStatus } from "./service/getPaymentStatus"
+import { getPaymentStatus } from "./app/(publicGroup)/_actions/payment/getPaymentStatus"
 
 const AUTH_ROUTES = ["/login", "/register"]
 

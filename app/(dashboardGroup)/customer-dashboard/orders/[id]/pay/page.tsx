@@ -1,35 +1,18 @@
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { createPaymentAction } from "./_actions/paymentActions"
-import type { IRentalOrder } from "@/lib/types"
+import { createPaymentAction } from "../../../../_actions/paymentActions"
+import { fetchRentalOrderServer } from "@/lib/api/rentals"
 
-const API_BASE = process.env.BACKEND_API_URL || "http://localhost:4000"
-
-async function fetchOrder(id: string): Promise<IRentalOrder | null> {
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get("accessToken")?.value
-  if (!accessToken) return null
-
-  try {
-    const res = await fetch(`${API_BASE}/api/rentals/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      cache: "no-cache",
-    })
-    const json = await res.json()
-    if (!json.success) return null
-    return json.data ?? null
-  } catch {
-    return null
-  }
-}
-
-const PayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+const PayPage = async ({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ error?: string }>
+}) => {
   const { id } = await params
-  const order = await fetchOrder(id)
+  const { error } = await searchParams
+  const order = await fetchRentalOrderServer(id)
 
   if (!order) {
     return (
@@ -45,7 +28,12 @@ const PayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     )
   }
 
-  if (order.status === "PAID" || order.status === "PICKED_UP" || order.status === "RETURNED") {
+  if (
+    order.status === "PAID" ||
+    order.status === "PICKED_UP" ||
+    order.status === "RETURNED" ||
+    order.status === "CANCELLED"
+  ) {
     redirect("/customer-dashboard")
   }
 
@@ -57,6 +45,12 @@ const PayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       >
         &larr; Back to Dashboard
       </Link>
+
+      {error && (
+        <div className="mb-6 rounded-md bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200">
+          {error}
+        </div>
+      )}
 
       <h1 className="font-heading text-3xl font-bold tracking-tight mb-8">Payment</h1>
 

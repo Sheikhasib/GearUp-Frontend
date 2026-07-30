@@ -11,7 +11,7 @@ import type { IGearItem } from "@/lib/types"
 import { format } from "date-fns"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { createRentalOrderAction } from "../../gears/[id]/_actions/rentalActions"
+import { createRentalOrderAction } from "../../_actions/gear/rentalActions"
 
 interface RentNowPanelProps {
   gear: IGearItem
@@ -57,10 +57,15 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
       quantity,
     })
 
+    const adjustedEnd =
+      dateRange.to.getTime() === dateRange.from.getTime()
+        ? new Date(dateRange.from.getTime() + 86400000)
+        : dateRange.to
+
     const result = await createRentalOrderAction({
       gearItemId: gear.id,
       startDate: dateRange.from.toISOString(),
-      endDate: dateRange.to.toISOString(),
+      endDate: adjustedEnd.toISOString(),
       quantity,
     })
 

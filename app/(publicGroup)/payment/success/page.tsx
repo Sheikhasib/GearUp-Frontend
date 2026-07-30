@@ -1,30 +1,6 @@
-import { cookies } from "next/headers"
 import Link from "next/link"
-import { getPaymentStatus } from "@/service/getPaymentStatus"
-import type { IRentalOrder } from "@/lib/types"
-
-const API_BASE = process.env.BACKEND_API_URL || "http://localhost:4000"
-
-async function fetchOrder(id: string): Promise<IRentalOrder | null> {
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get("accessToken")?.value
-  if (!accessToken) return null
-
-  try {
-    const res = await fetch(`${API_BASE}/api/rentals/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      cache: "no-cache",
-    })
-    const json = await res.json()
-    if (!json.success) return null
-    return json.data ?? null
-  } catch {
-    return null
-  }
-}
+import { getPaymentStatus } from "../../_actions/payment/getPaymentStatus"
+import { fetchRentalOrderServer } from "@/lib/api/rentals"
 
 const PaymentSuccessPage = async ({
   searchParams,
@@ -52,7 +28,7 @@ const PaymentSuccessPage = async ({
 
   const [paymentStatus, order] = await Promise.all([
     getPaymentStatus(orderId),
-    fetchOrder(orderId),
+    fetchRentalOrderServer(orderId),
   ])
 
   const isPaid = Boolean(

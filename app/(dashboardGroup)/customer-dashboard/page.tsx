@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 import Link from "next/link"
-import { CustomerDashboardClient } from "./_components/CustomerDashboardClient"
+import { CustomerDashboardClient } from "../_components/CustomerDashboardClient"
 import type { IRentalOrder } from "@/lib/types"
 
 const API_BASE = process.env.BACKEND_API_URL || "http://localhost:4000"
@@ -14,7 +14,7 @@ async function fetchMyOrders(): Promise<IRentalOrder[]> {
     const res = await fetch(`${API_BASE}/api/rentals`, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        "Cookie": `accessToken=${accessToken}`,
       },
       cache: "no-cache",
     })
@@ -48,15 +48,17 @@ const CustomerDashboardPage = async () => {
   const orders = await fetchMyOrders()
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <CustomerDashboardClient />
 
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="font-heading text-3xl font-bold tracking-tight">My Orders</h1>
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="font-heading text-3xl font-bold tracking-tight">
+          My Orders
+        </h1>
       </div>
 
       {orders.length === 0 ? (
-        <div className="text-center py-20 text-muted-foreground">
+        <div className="py-20 text-center text-muted-foreground">
           <p className="text-lg">No orders yet</p>
           <Link
             href="/gears"
@@ -70,10 +72,10 @@ const CustomerDashboardPage = async () => {
           {orders.map((order) => (
             <div
               key={order.id}
-              className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-5 ring-1 ring-foreground/5"
+              className="flex flex-col justify-between gap-4 bg-card p-5 ring-1 ring-foreground/5 sm:flex-row sm:items-center"
             >
-              <div className="space-y-1 min-w-0">
-                <p className="font-heading font-semibold truncate">
+              <div className="min-w-0 space-y-1">
+                <p className="truncate font-heading font-semibold">
                   {order.gearItem?.name ?? "Gear"}
                 </p>
                 <div className="flex flex-wrap gap-x-4 text-sm text-muted-foreground">
@@ -86,9 +88,9 @@ const CustomerDashboardPage = async () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 shrink-0">
+              <div className="flex shrink-0 items-center gap-3">
                 <span
-                  className={`text-[10px] font-semibold tracking-widest uppercase px-2 py-0.5 ring-1 ${statusColor[order.status] || "text-gray-600 bg-gray-50 ring-gray-200"}`}
+                  className={`px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${statusColor[order.status] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
                 >
                   {statusLabel[order.status] || order.status}
                 </span>
@@ -96,7 +98,7 @@ const CustomerDashboardPage = async () => {
                 {order.status === "CONFIRMED" && (
                   <Link
                     href={`/customer-dashboard/orders/${order.id}/pay`}
-                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                   >
                     Pay Now
                   </Link>
