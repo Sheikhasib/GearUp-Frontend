@@ -16,7 +16,7 @@ const RegisterForm = () => {
   const [photoUrl, setPhotoUrl] = useState("");
 
   useEffect(() => {
-    if (!state) return;
+    if (!state?.message) return;
 
     if (state.success) {
       toast.success(state.message || "Registration Successful");

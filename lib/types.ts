@@ -35,6 +35,7 @@ export interface IGearItem {
   category?: Pick<ICategory, "id" | "name">
   provider?: Pick<IUser, "id" | "name">
   reviews?: IReview[]
+  unavailableRanges?: { startDate: string; endDate: string }[]
 }
 
 export interface ICreateGearPayload {
@@ -111,6 +112,8 @@ export interface IGearQuery {
   brand?: string
   minPrice?: number
   maxPrice?: number
+  availableFrom?: string
+  availableTo?: string
   page?: number
   limit?: number
   sortBy?: string

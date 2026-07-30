@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import jwt from "jsonwebtoken"
 import type { JwtPayload } from "jsonwebtoken"
-import { loginSchema, registerSchema } from "@/lib/validations/auth"
+import { loginSchema, registerSchema } from "./auth.schema"
 
 export type AuthActionState = {
   success: boolean

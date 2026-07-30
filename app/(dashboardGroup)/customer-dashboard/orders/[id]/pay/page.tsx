@@ -1,0 +1,129 @@
+import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
+import Link from "next/link"
+import { createPaymentAction } from "./_actions/paymentActions"
+import type { IRentalOrder } from "@/lib/types"
+
+const API_BASE = process.env.BACKEND_API_URL || "http://localhost:4000"
+
+async function fetchOrder(id: string): Promise<IRentalOrder | null> {
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get("accessToken")?.value
+  if (!accessToken) return null
+
+  try {
+    const res = await fetch(`${API_BASE}/api/rentals/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-cache",
+    })
+    const json = await res.json()
+    if (!json.success) return null
+    return json.data ?? null
+  } catch {
+    return null
+  }
+}
+
+const PayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params
+  const order = await fetchOrder(id)
+
+  if (!order) {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-4 py-20 text-center">
+        <h1 className="font-heading text-2xl font-bold">Order not found</h1>
+        <Link
+          href="/customer-dashboard"
+          className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
+        >
+          Back to Dashboard
+        </Link>
+      </div>
+    )
+  }
+
+  if (order.status === "PAID" || order.status === "PICKED_UP" || order.status === "RETURNED") {
+    redirect("/customer-dashboard")
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
+      <Link
+        href="/customer-dashboard"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors mb-8"
+      >
+        &larr; Back to Dashboard
+      </Link>
+
+      <h1 className="font-heading text-3xl font-bold tracking-tight mb-8">Payment</h1>
+
+      <div className="bg-card p-6 ring-1 ring-foreground/5 space-y-4">
+        <div className="space-y-1">
+          <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
+            Gear
+          </p>
+          <p className="font-heading font-semibold text-lg">
+            {order.gearItem?.name ?? "Gear"}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="space-y-1">
+            <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
+              Start Date
+            </p>
+            <p>{new Date(order.startDate).toLocaleDateString()}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
+              End Date
+            </p>
+            <p>{new Date(order.endDate).toLocaleDateString()}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
+              Quantity
+            </p>
+            <p>x{order.quantity}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
+              Total
+            </p>
+            <p className="font-heading font-bold text-lg text-primary">
+              ${order.totalPrice.toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        <div className="border-t border-border pt-4">
+          {order.status === "CONFIRMED" ? (
+            <form
+              action={createPaymentAction.bind(null, order.id)}
+            >
+              <button
+                type="submit"
+                className="w-full rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
+              >
+                Pay with SSLCommerz
+              </button>
+            </form>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-sm text-muted-foreground">
+                {order.status === "PLACED"
+                  ? "Waiting for provider confirmation. You'll be able to pay once the provider confirms your order."
+                  : `Order status: ${order.status}`}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default PayPage

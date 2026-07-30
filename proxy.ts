@@ -4,10 +4,11 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { jwtUtils } from "./utils/jwt"
 import type { JwtPayload } from "jsonwebtoken"
+import { getPaymentStatus } from "./service/getPaymentStatus"
 
 const AUTH_ROUTES = ["/login", "/register"]
 
-const PUBLIC_ROUTES = ["/", "/gears", "/about", "/contact", "/services"]
+const PUBLIC_ROUTES = ["/", "/gears", "/about", "/contact", "/services", "/payment/success", "/payment/cancel"]
 
 const ROLE_DASHBOARD: Record<string, string> = {
   CUSTOMER: "/customer-dashboard",
@@ -100,6 +101,22 @@ export async function proxy(request: NextRequest) {
   }
   if (pathname.startsWith("/provider/") && userRole !== "PROVIDER") {
     return NextResponse.redirect(new URL("/not-found", request.url))
+  }
+
+  if (accessToken && (pathname === "/payment/success" || pathname === "/payment/cancel")) {
+    const orderId = request.nextUrl.searchParams.get("orderId")
+    if (orderId) {
+      const paymentStatus = await getPaymentStatus(orderId)
+      const isPaid = Boolean(paymentStatus?.success && paymentStatus.data?.isPaid)
+
+      if (pathname === "/payment/success" && !isPaid) {
+        return NextResponse.redirect(new URL("/customer-dashboard", request.url))
+      }
+
+      if (pathname === "/payment/cancel" && isPaid) {
+        return NextResponse.redirect(new URL(`/payment/success?orderId=${orderId}`, request.url))
+      }
+    }
   }
 
   return NextResponse.next()

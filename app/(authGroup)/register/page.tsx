@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import RegisterForm from "../_components/RegisterForm";
 
 export default function RegisterPage() {
@@ -14,6 +15,13 @@ export default function RegisterPage() {
 
           {/* FORM */}
           <RegisterForm></RegisterForm>
+
+          <p className="text-center text-sm text-gray-500">
+            Already have an account?{" "}
+            <Link href="/login" className="font-medium text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
     </>

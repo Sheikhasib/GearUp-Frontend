@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { GearImageUpload } from "@/components/shared/gear-image-upload"
+import { GearImageUpload } from "../../../_components/gear-image-upload"
 import { useCategories } from "@/hooks/useCategories"
-import { useCreateGear } from "@/hooks/useProvider"
+import { useCreateGear } from "../../../_hooks/useProvider"
 import type { ICreateGearPayload } from "@/lib/types"
 
 const containerVariants = {
