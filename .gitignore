@@ -37,7 +37,7 @@ pnpm-debug.log*
 next-env.d.ts
 
 # opencode
-.opencode
+.opencode/
 
 # Temporary example projects
 temp_example_back/
