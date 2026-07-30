@@ -39,4 +39,10 @@ next-env.d.ts
 # opencode
 .opencode
 
-# Files
+# Temporary example projects
+temp_example_back/
+temp_example_front/
+temp_gearup_backend/
+
+# Documentation
+2-GearUp-Frontend.md
