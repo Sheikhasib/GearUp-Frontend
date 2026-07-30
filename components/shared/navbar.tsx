@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {
   Bicycle,
+  SignIn,
   SignOut,
   User,
+  UserPlus,
   Gauge,
   CreditCard,
   GearSix,
@@ -48,9 +50,9 @@ interface NavbarProps {
 
 const navItems = [
   { label: "Home", href: "/" },
+  { label: "Browse Gear", href: "/gears" },
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
-  { label: "Browse Gear", href: "/gears" },
   { label: "Contact", href: "/contact" },
 ]
 
@@ -67,6 +69,7 @@ export function Navbar({ user }: NavbarProps) {
   const { resolvedTheme, setTheme } = useTheme()
   const { setUser, clear } = useAuthStore()
 
+  // Set the user in the auth store
   useEffect(() => {
     if (user?.success) {
       setUser(user.data)
@@ -75,6 +78,7 @@ export function Navbar({ user }: NavbarProps) {
     }
   }, [user, setUser, clear])
 
+  // Function to handle user menu actions
   const handleUserMenuAction = async (action: string) => {
     if (action === "dashboard") {
       if (!user?.success) return
@@ -85,11 +89,12 @@ export function Navbar({ user }: NavbarProps) {
       return
     }
 
+    // Logout action
     if (action === "logout") {
       await logout()
-      clear()
-      toast.success("Logged out successfully")
-      router.push("/login")
+      clear() // clear the auth store
+      toast.success("User Logged out successfully")
+      router.push("/login") // redirect to login page
     }
   }
 
@@ -137,76 +142,86 @@ export function Navbar({ user }: NavbarProps) {
             {resolvedTheme === "dark" ? <Sun /> : <Moon />}
           </Button>
 
-        {user?.success ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Avatar className="size-8">
-                  <AvatarFallback className="text-xs text-primary">
-                    {getInitials(user.data.name || "N/A")}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="sr-only">Open user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-medium">
-                      {user.data.name || "N/A"}
-                    </span>
-                    <span className="text-xs font-normal text-muted-foreground lowercase">
-                      {user.data.email || "N/A"}
-                    </span>
-                  </div>
-                </DropdownMenuLabel>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                {userMenuItems.map((item) =>
-                  item.action ? (
-                    <DropdownMenuItem
-                      key={item.label}
-                      className="gap-2"
-                      onSelect={() => handleUserMenuAction(item.action!)}
-                    >
-                      <item.icon />
-                      {item.label}
-                    </DropdownMenuItem>
-                  ) : (
-                    <DropdownMenuItem key={item.href} className="gap-2" asChild>
-                      <Link href={item.href!}>
+          {user?.success ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Avatar className="size-8">
+                    <AvatarFallback className="text-xs text-primary">
+                      {getInitials(user.data.name || "N/A")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="sr-only">Open user menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-medium">
+                        {user.data.name || "N/A"}
+                      </span>
+                      <span className="text-xs font-normal text-muted-foreground lowercase">
+                        {user.data.email || "N/A"}
+                      </span>
+                    </div>
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  {userMenuItems.map((item) =>
+                    item.action ? (
+                      <DropdownMenuItem
+                        key={item.label}
+                        className="gap-2"
+                        onSelect={() => handleUserMenuAction(item.action!)}
+                      >
                         <item.icon />
                         {item.label}
-                      </Link>
-                    </DropdownMenuItem>
-                  )
-                )}
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  variant="destructive"
-                  className="gap-2"
-                  onSelect={() => handleUserMenuAction("logout")}
-                >
-                  <SignOut />
-                  Log Out
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/login">Log In</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/register">Sign Up</Link>
-            </Button>
-          </div>
-        )}
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem
+                        key={item.href}
+                        className="gap-2"
+                        asChild
+                      >
+                        <Link href={item.href!}>
+                          <item.icon />
+                          {item.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    )
+                  )}
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    className="gap-2"
+                    onSelect={() => handleUserMenuAction("logout")}
+                  >
+                    <SignOut />
+                    Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button size="sm" asChild>
+                <Link href="/login">
+                  <SignIn className="mr-1" />
+                  Log In
+                </Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/register">
+                  <UserPlus className="mr-1" />
+                  Sign Up
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
       </nav>
     </header>

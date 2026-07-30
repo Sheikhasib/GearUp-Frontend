@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { UserPlus } from "@phosphor-icons/react";
 import React, { useActionState, useEffect, useState } from "react";
 import { registerAction } from "../_actions/authActions";
 import { toast } from "sonner";
@@ -80,7 +81,7 @@ const RegisterForm = () => {
         ></Input>
 
         <Button className="cursor-pointer" type="submit">
-          {pending ? "Submitting..." : "Register"}
+          {pending ? "Submitting..." : <><UserPlus className="mr-1" /> Register</>}
         </Button>
       </Card>
     </form>
