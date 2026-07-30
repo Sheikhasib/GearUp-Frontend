@@ -64,7 +64,7 @@ export const loginAction = async (
     secure: process.env.NODE_ENV === "production",
   })
 
-  const decoded = jwt.decode(accessToken) as JwtPayload
+  const decodedToken = jwt.decode(accessToken) as JwtPayload
 
   if (
     redirectTo &&
@@ -75,9 +75,9 @@ export const loginAction = async (
     redirect(redirectTo)
   }
 
-  if (decoded.role === "ADMIN") {
+  if (decodedToken.role === "ADMIN") {
     redirect("/admin-dashboard")
-  } else if (decoded.role === "PROVIDER") {
+  } else if (decodedToken.role === "PROVIDER") {
     redirect("/provider-dashboard")
   } else {
     redirect("/customer-dashboard")

@@ -1,7 +1,13 @@
+import { getNewAccessToken } from "./service/refreshToken"
+import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { jwtUtils } from "./utils/jwt"
 import type { JwtPayload } from "jsonwebtoken"
-import { jwtUtils } from "@/utils/jwt"
+
+const AUTH_ROUTES = ["/login", "/register"]
+
+const PUBLIC_ROUTES = ["/", "/gears", "/about", "/contact", "/services"]
 
 const ROLE_DASHBOARD: Record<string, string> = {
   CUSTOMER: "/customer-dashboard",
@@ -9,67 +15,96 @@ const ROLE_DASHBOARD: Record<string, string> = {
   ADMIN: "/admin-dashboard",
 }
 
-const DASHBOARD_PREFIXES = ["/customer-dashboard", "/provider-dashboard", "/admin-dashboard", "/provider/"]
+export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const cookieStore = await cookies()
 
-  const accessToken = request.cookies.get("accessToken")?.value
+  let accessToken = request.cookies.get("accessToken")?.value
+  const refreshToken = request.cookies.get("refreshToken")?.value
 
-  const decoded = accessToken
+  let decodedAccessToken = accessToken
     ? (jwtUtils.verifyToken(
         accessToken,
         process.env.JWT_ACCESS_SECRET as string
-      ) as { success: boolean; data?: JwtPayload })
+      ) as JwtPayload)
     : null
 
-  const userRole = decoded?.success ? (decoded.data as JwtPayload).role as string : null
+  const decodedRefreshToken = refreshToken
+    ? (jwtUtils.verifyToken(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET as string
+      ) as JwtPayload)
+    : null
 
-  const isAuthRoute = pathname === "/login" || pathname === "/register"
+  if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
+    // console.log("refresh")
+    const result = await getNewAccessToken()
+    // console.log(result)
 
-  // already logged in → skip auth pages
-  if (accessToken && isAuthRoute) {
-    const target = userRole && ROLE_DASHBOARD[userRole] ? ROLE_DASHBOARD[userRole] : "/customer-dashboard"
+    if (result?.success) {
+      const newAccessToken = result?.data?.accessToken
+
+      cookieStore.set("accessToken", newAccessToken, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24,
+        sameSite: "lax",
+      })
+
+      accessToken = newAccessToken
+
+      decodedAccessToken = jwtUtils.verifyToken(
+        accessToken as string,
+        process.env.JWT_ACCESS_SECRET as string
+      ) as JwtPayload
+    }
+  }
+
+  let userRole: string | null = null
+
+  if (!decodedAccessToken?.success) {
+    cookieStore.delete("accessToken")
+  }
+
+  if (decodedAccessToken?.success && decodedAccessToken?.data) {
+    userRole = (decodedAccessToken.data as JwtPayload).role as string
+  }
+
+  if (accessToken && AUTH_ROUTES.includes(pathname)) {
+    const target = userRole ? ROLE_DASHBOARD[userRole] || "/" : "/"
     return NextResponse.redirect(new URL(target, request.url))
   }
 
-  const isProtected = DASHBOARD_PREFIXES.some((p) => pathname.startsWith(p))
+  const isPublicRoute = PUBLIC_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  )
 
-  if (isProtected) {
-    if (!decoded?.success) {
-      const loginUrl = new URL("/login", request.url)
-      loginUrl.searchParams.set("from", pathname)
-      const response = NextResponse.redirect(loginUrl)
-      response.cookies.delete("accessToken")
-      response.cookies.delete("refreshToken")
-      return response
-    }
+  const isAuthRoute = AUTH_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  )
 
-    const expectedRole = DASHBOARD_PREFIXES.reduce<string | null>((match, prefix) => {
-      if (pathname.startsWith(prefix)) {
-        const roleKey = prefix.replace("/-dashboard", "").replace("/", "").toUpperCase()
-        if (ROLE_DASHBOARD[roleKey]) return roleKey
-        if (prefix === "/provider/") return "PROVIDER"
-      }
-      return match
-    }, null)
+  if (!accessToken && !isPublicRoute && !isAuthRoute) {
+    const loginUrl = new URL("/login", request.url)
+    loginUrl.searchParams.set("redirectTo", pathname)
+    return NextResponse.redirect(loginUrl)
+  }
 
-    if (expectedRole && userRole !== expectedRole) {
-      const target = ROLE_DASHBOARD[userRole!] || "/login"
-      return NextResponse.redirect(new URL(target, request.url))
-    }
+  if (pathname.startsWith("/customer-dashboard") && userRole !== "CUSTOMER") {
+    return NextResponse.redirect(new URL("/not-found", request.url))
+  }
+  if (pathname.startsWith("/provider-dashboard") && userRole !== "PROVIDER") {
+    return NextResponse.redirect(new URL("/not-found", request.url))
+  }
+  if (pathname.startsWith("/admin-dashboard") && userRole !== "ADMIN") {
+    return NextResponse.redirect(new URL("/not-found", request.url))
+  }
+  if (pathname.startsWith("/provider/") && userRole !== "PROVIDER") {
+    return NextResponse.redirect(new URL("/not-found", request.url))
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: [
-    "/login",
-    "/register",
-    "/customer-dashboard/:path*",
-    "/admin-dashboard/:path*",
-    "/provider-dashboard/:path*",
-    "/provider/:path*",
-  ],
+  matcher: ["/((?!api|_next/static|favicon.ico|_next/image|.*\\.png$).*)"],
 }
