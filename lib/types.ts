@@ -48,9 +48,10 @@ export interface ICreateGearPayload {
   priceRatePerDay: number
   quantity: number
   images?: string[]
+  isAvailable?: boolean
 }
 
-export interface IUpdateGearPayload extends Partial<ICreateGearPayload> {}
+export type IUpdateGearPayload = Partial<ICreateGearPayload>
 
 export interface IRentalOrder {
   id: string

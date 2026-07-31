@@ -6,6 +6,7 @@ import {
   Plus,
   Receipt,
   ShieldCheck,
+  Truck,
 } from "@phosphor-icons/react"
 
 const CUSTOMER_SIDEBAR_ITEMS: ISidebarItem[] = [
@@ -36,6 +37,11 @@ const PROVIDER_SIDEBAR_ITEMS: ISidebarItem[] = [
     label: "My Gear",
     href: "/provider-dashboard/my-gear",
     icon: GearSix,
+  },
+  {
+    label: "Orders",
+    href: "/provider-dashboard/orders",
+    icon: Truck,
   },
   {
     label: "Add Gear",

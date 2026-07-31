@@ -26,7 +26,10 @@ export async function deleteGear(id: string): Promise<void> {
 }
 
 export async function fetchIncomingOrders(): Promise<IRentalOrder[]> {
-  return apiClient("/provider/rentalOrders")
+  const orders = await apiClient<IRentalOrder[]>("/provider/rentalOrders")
+  return [...orders].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
 }
 
 export async function updateOrderStatus(id: string, status: string): Promise<IRentalOrder> {
