@@ -22,6 +22,8 @@ interface GearFiltersProps {
 export function GearFilters({ params, brands = [], onParamsChange }: GearFiltersProps) {
   const { data: categories } = useCategories()
   const [search, setSearch] = useState(params.search || "")
+  const [minPrice, setMinPrice] = useState(params.minPrice || "")
+  const [maxPrice, setMaxPrice] = useState(params.maxPrice || "")
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -31,6 +33,24 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
     }, 400)
     return () => clearTimeout(timer)
   }, [search])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (minPrice !== (params.minPrice || "")) {
+        onParamsChange({ minPrice })
+      }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [minPrice])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (maxPrice !== (params.maxPrice || "")) {
+        onParamsChange({ maxPrice })
+      }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [maxPrice])
 
   const updateParam = useCallback(
     (key: string, value: string) => {
@@ -104,8 +124,8 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
           type="number"
           min={0}
           placeholder="$0"
-          value={params.minPrice || ""}
-          onChange={(e) => updateParam("minPrice", e.target.value)}
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
         />
       </div>
 
@@ -117,8 +137,8 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
           type="number"
           min={0}
           placeholder="$999"
-          value={params.maxPrice || ""}
-          onChange={(e) => updateParam("maxPrice", e.target.value)}
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
         />
       </div>
 

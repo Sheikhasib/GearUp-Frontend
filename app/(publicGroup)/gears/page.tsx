@@ -3,7 +3,9 @@ import type { IGearItem } from "@/lib/types"
 
 const API_URL = process.env.BACKEND_API_URL || "http://localhost:4000"
 
-async function getGears(params: Record<string, string>): Promise<IGearItem[]> {
+async function getGears(
+  params: Record<string, string>
+): Promise<{ items: IGearItem[]; totalPages?: number }> {
   const searchParams = new URLSearchParams()
   if (params.search) searchParams.set("searchTerm", params.search)
   if (params.categoryId) searchParams.set("categoryId", params.categoryId)
@@ -12,6 +14,8 @@ async function getGears(params: Record<string, string>): Promise<IGearItem[]> {
   if (params.maxPrice) searchParams.set("maxPrice", params.maxPrice)
   if (params.availableFrom) searchParams.set("availableFrom", params.availableFrom)
   if (params.availableTo) searchParams.set("availableTo", params.availableTo)
+  const page = Math.max(1, Number(params.page) || 1)
+  searchParams.set("page", String(page))
   searchParams.set("limit", "12")
 
   try {
@@ -19,9 +23,9 @@ async function getGears(params: Record<string, string>): Promise<IGearItem[]> {
       cache: "no-cache",
     })
     const json = await res.json()
-    return json.data ?? []
+    return { items: json.data ?? [], totalPages: json.meta?.totalPages }
   } catch {
-    return []
+    return { items: [] }
   }
 }
 
@@ -39,8 +43,9 @@ export default async function GearsPage({
   if (typeof sp.maxPrice === "string") initialParams.maxPrice = sp.maxPrice
   if (typeof sp.availableFrom === "string") initialParams.availableFrom = sp.availableFrom
   if (typeof sp.availableTo === "string") initialParams.availableTo = sp.availableTo
+  if (typeof sp.page === "string") initialParams.page = sp.page
 
-  const initialData = await getGears(initialParams)
+  const initial = await getGears(initialParams)
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
@@ -50,7 +55,11 @@ export default async function GearsPage({
           Find the perfect gear for your next adventure
         </p>
       </div>
-      <GearsContent initialData={initialData} initialParams={initialParams} />
+      <GearsContent
+        initialData={initial.items}
+        initialTotalPages={initial.totalPages}
+        initialParams={initialParams}
+      />
     </div>
   )
 }

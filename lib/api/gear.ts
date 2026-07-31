@@ -1,9 +1,12 @@
-import { apiClient } from "./client"
-import type { IGearItem, IGearQuery } from "@/lib/types"
+import { apiClient, apiClientFull } from "./client"
+import type { IGearItem, IGearQuery, IApiResponse } from "@/lib/types"
 
-export async function fetchGear(
-  query?: IGearQuery
-): Promise<IGearItem[]> {
+export interface IGearListResult {
+  items: IGearItem[]
+  meta?: IApiResponse<IGearItem[]>["meta"]
+}
+
+export async function fetchGear(query?: IGearQuery): Promise<IGearListResult> {
   const params = new URLSearchParams()
   if (query?.searchTerm) params.set("searchTerm", query.searchTerm)
   if (query?.categoryId) params.set("categoryId", query.categoryId)
@@ -18,7 +21,8 @@ export async function fetchGear(
   if (query?.sortOrder) params.set("sortOrder", query.sortOrder)
 
   const qs = params.toString()
-  return apiClient(`/gear${qs ? `?${qs}` : ""}`)
+  const res = await apiClientFull<IGearItem[]>(`/gear${qs ? `?${qs}` : ""}`)
+  return { items: res.data, meta: res.meta }
 }
 
 export async function fetchGearById(id: string): Promise<IGearItem> {
