@@ -18,6 +18,7 @@ export function GearsContent({ initialData, initialParams }: GearsContentProps) 
 
   const currentSearch = searchParams.get("search") || initialParams.search || ""
   const currentCategory = searchParams.get("categoryId") || initialParams.categoryId || ""
+  const currentBrand = searchParams.get("brand") || initialParams.brand || ""
   const currentMinPrice = searchParams.get("minPrice") || initialParams.minPrice || ""
   const currentMaxPrice = searchParams.get("maxPrice") || initialParams.maxPrice || ""
   const currentAvailFrom = searchParams.get("availableFrom") || initialParams.availableFrom || ""
@@ -26,6 +27,7 @@ export function GearsContent({ initialData, initialParams }: GearsContentProps) 
   const { data, isLoading } = useGear({
     searchTerm: currentSearch || undefined,
     categoryId: currentCategory || undefined,
+    brand: currentBrand || undefined,
     minPrice: currentMinPrice ? Number(currentMinPrice) : undefined,
     maxPrice: currentMaxPrice ? Number(currentMaxPrice) : undefined,
     availableFrom: currentAvailFrom || undefined,
@@ -34,6 +36,10 @@ export function GearsContent({ initialData, initialParams }: GearsContentProps) 
   })
 
   const gears: IGearItem[] = data ?? initialData
+
+  const brands = Array.from(
+    new Set(gears.map((gear) => gear.brand).filter((brand): brand is string => !!brand))
+  )
 
   const handleParamsChange = useCallback(
     (patch: Record<string, string>) => {
@@ -57,11 +63,13 @@ export function GearsContent({ initialData, initialParams }: GearsContentProps) 
         params={{
           search: currentSearch,
           categoryId: currentCategory,
+          brand: currentBrand,
           minPrice: currentMinPrice,
           maxPrice: currentMaxPrice,
           availableFrom: currentAvailFrom,
           availableTo: currentAvailTo,
         }}
+        brands={brands}
         onParamsChange={handleParamsChange}
       />
       <GearGrid gears={gears} isLoading={isLoading} />

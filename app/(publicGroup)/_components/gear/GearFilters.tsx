@@ -9,15 +9,17 @@ interface GearFiltersProps {
   params: {
     search?: string
     categoryId?: string
+    brand?: string
     minPrice?: string
     maxPrice?: string
     availableFrom?: string
     availableTo?: string
   }
+  brands?: string[]
   onParamsChange: (params: Record<string, string>) => void
 }
 
-export function GearFilters({ params, onParamsChange }: GearFiltersProps) {
+export function GearFilters({ params, brands = [], onParamsChange }: GearFiltersProps) {
   const { data: categories } = useCategories()
   const [search, setSearch] = useState(params.search || "")
 
@@ -67,6 +69,28 @@ export function GearFilters({ params, onParamsChange }: GearFiltersProps) {
           {categories?.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="w-40">
+        <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
+          Brand
+        </label>
+        <select
+          value={params.brand || ""}
+          onChange={(e) => updateParam("brand", e.target.value)}
+          className={cn(
+            "h-10 w-full bg-transparent border-0 border-b border-b-input px-0 py-1 text-sm",
+            "focus-visible:border-b-ring outline-none transition-colors",
+            "cursor-pointer"
+          )}
+        >
+          <option value="">All Brands</option>
+          {brands.map((brand) => (
+            <option key={brand} value={brand}>
+              {brand}
             </option>
           ))}
         </select>

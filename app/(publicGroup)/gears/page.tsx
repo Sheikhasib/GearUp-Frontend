@@ -7,6 +7,7 @@ async function getGears(params: Record<string, string>): Promise<IGearItem[]> {
   const searchParams = new URLSearchParams()
   if (params.search) searchParams.set("searchTerm", params.search)
   if (params.categoryId) searchParams.set("categoryId", params.categoryId)
+  if (params.brand) searchParams.set("brand", params.brand)
   if (params.minPrice) searchParams.set("minPrice", params.minPrice)
   if (params.maxPrice) searchParams.set("maxPrice", params.maxPrice)
   if (params.availableFrom) searchParams.set("availableFrom", params.availableFrom)
@@ -33,6 +34,7 @@ export default async function GearsPage({
   const initialParams: Record<string, string> = {}
   if (typeof sp.search === "string") initialParams.search = sp.search
   if (typeof sp.categoryId === "string") initialParams.categoryId = sp.categoryId
+  if (typeof sp.brand === "string") initialParams.brand = sp.brand
   if (typeof sp.minPrice === "string") initialParams.minPrice = sp.minPrice
   if (typeof sp.maxPrice === "string") initialParams.maxPrice = sp.maxPrice
   if (typeof sp.availableFrom === "string") initialParams.availableFrom = sp.availableFrom
