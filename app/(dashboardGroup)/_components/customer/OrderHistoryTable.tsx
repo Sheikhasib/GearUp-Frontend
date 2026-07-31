@@ -7,6 +7,13 @@ import { useCustomerOrders } from "../../_hooks/useCustomerOrders"
 import { STATUS_LABELS, STATUS_STYLES } from "@/lib/badgeStyles"
 import { ReviewDialog } from "./ReviewDialog"
 
+const formatDate = (value: string) =>
+  new Date(value).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })
+
 export function OrderHistoryTable() {
   const { data: orders, isLoading } = useCustomerOrders()
   const queryClient = useQueryClient()
@@ -24,19 +31,13 @@ export function OrderHistoryTable() {
   }
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 animate-pulse rounded-md bg-muted" />
-        ))}
-      </div>
-    )
+    return <div className="h-64 animate-pulse rounded-md bg-muted" />
   }
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="py-20 text-center text-muted-foreground">
-        <p className="text-lg">No orders yet</p>
+      <div className="rounded-md border border-border py-20 text-center">
+        <p className="text-lg text-foreground">No orders yet</p>
         <Link
           href="/gears"
           className="mt-4 inline-block text-sm font-semibold text-primary hover:underline"
@@ -49,61 +50,80 @@ export function OrderHistoryTable() {
 
   return (
     <>
-      <div className="space-y-4">
-        {orders.map((order) => (
-          <div
-            key={order.id}
-            className="flex flex-col justify-between gap-4 bg-card p-5 ring-1 ring-foreground/5 sm:flex-row sm:items-center"
-          >
-            <div className="min-w-0 space-y-1">
-              <p className="truncate font-heading font-semibold">
-                {order.gearItem?.name ?? "Gear"}
-              </p>
-              <div className="flex flex-wrap gap-x-4 text-sm text-muted-foreground">
-                <span>
-                  {new Date(order.startDate).toLocaleDateString()} –{" "}
-                  {new Date(order.endDate).toLocaleDateString()}
-                </span>
-                <span>x{order.quantity}</span>
-                <span>${order.totalPrice.toLocaleString()}</span>
-              </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-3">
-              <span
-                className={`px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${STATUS_STYLES[order.status] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
-              >
-                {STATUS_LABELS[order.status] || order.status}
-              </span>
-
-              {order.status === "CONFIRMED" && (
-                <Link
-                  href={`/customer-dashboard/orders/${order.id}/pay`}
-                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-                >
-                  Pay Now
-                </Link>
-              )}
-
-              {order.status === "RETURNED" &&
-                !order.review &&
-                !reviewedOrderIds.has(order.id) && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setReviewTarget({
-                        id: order.id,
-                        name: order.gearItem?.name ?? "Gear",
-                      })
-                    }
-                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
+      <div className="overflow-x-auto rounded-md border border-border bg-card">
+        <table className="w-full min-w-[760px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-border bg-muted/40">
+              <th className="px-5 py-3 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+                Gear
+              </th>
+              <th className="px-5 py-3 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+                Period
+              </th>
+              <th className="px-5 py-3 text-center text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+                Qty
+              </th>
+              <th className="px-5 py-3 text-right text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+                Total
+              </th>
+              <th className="px-5 py-3 text-center text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+                Status
+              </th>
+              <th className="px-5 py-3 text-right text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {orders.map((order) => (
+              <tr key={order.id} className="transition-colors hover:bg-muted/30">
+                <td className="px-5 py-4 font-medium">
+                  {order.gearItem?.name ?? "Gear"}
+                </td>
+                <td className="px-5 py-4 text-muted-foreground">
+                  {formatDate(order.startDate)} – {formatDate(order.endDate)}
+                </td>
+                <td className="px-5 py-4 text-center">x{order.quantity}</td>
+                <td className="px-5 py-4 text-right font-heading font-bold">
+                  ${order.totalPrice.toLocaleString()}
+                </td>
+                <td className="px-5 py-4 text-center">
+                  <span
+                    className={`inline-block px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${STATUS_STYLES[order.status] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
                   >
-                    Leave Review
-                  </button>
-                )}
-            </div>
-          </div>
-        ))}
+                    {STATUS_LABELS[order.status] || order.status}
+                  </span>
+                </td>
+                <td className="px-5 py-4 text-right">
+                  {order.status === "CONFIRMED" && (
+                    <Link
+                      href={`/customer-dashboard/orders/${order.id}/pay`}
+                      className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                    >
+                      Pay Now
+                    </Link>
+                  )}
+                  {order.status === "RETURNED" &&
+                    !order.review &&
+                    !reviewedOrderIds.has(order.id) && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setReviewTarget({
+                            id: order.id,
+                            name: order.gearItem?.name ?? "Gear",
+                          })
+                        }
+                        className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
+                      >
+                        Leave Review
+                      </button>
+                    )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <ReviewDialog

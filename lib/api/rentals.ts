@@ -9,7 +9,10 @@ export async function createRental(payload: ICreateRentalPayload): Promise<IRent
 }
 
 export async function fetchMyRentals(): Promise<IRentalOrder[]> {
-  return apiClient("/rentals")
+  const orders = await apiClient<IRentalOrder[]>("/rentals")
+  return [...orders].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
 }
 
 export async function fetchRentalById(id: string): Promise<IRentalOrder> {

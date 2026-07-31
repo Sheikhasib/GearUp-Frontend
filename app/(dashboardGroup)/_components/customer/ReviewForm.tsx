@@ -1,12 +1,13 @@
 "use client"
 
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
+import { toast } from "sonner"
+import { Star } from "@phosphor-icons/react"
 import { reviewSchema, type ReviewInput } from "@/lib/validations/review"
 import { createReviewAction } from "../../_actions/reviewActions"
 import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
-import { useState } from "react"
 
 interface ReviewFormProps {
   rentalOrderId: string
@@ -15,42 +16,43 @@ interface ReviewFormProps {
 }
 
 export function ReviewForm({ rentalOrderId, gearItemName, onSuccess }: ReviewFormProps) {
-  const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [pending, setPending] = useState(false)
 
   const {
+    control,
     register,
     handleSubmit,
     setValue,
     formState: { errors },
   } = useForm<ReviewInput>({
     resolver: zodResolver(reviewSchema),
-    defaultValues: {
-      rentalOrderId,
-      rating: 0,
-      comment: "",
-    },
+    defaultValues: { rentalOrderId, rating: 0, comment: "" },
   })
+
+  const rating = useWatch({ control, name: "rating" })
 
   const onSubmit = async (data: ReviewInput) => {
     setPending(true)
-    const result = await createReviewAction(data)
-    setPending(false)
-
-    if (result.success) {
-      toast.success(result.message)
-      onSuccess()
-    } else {
-      toast.error(result.message)
+    try {
+      const result = await createReviewAction(data)
+      if (result.success) {
+        toast.success(result.message)
+        onSuccess()
+      } else {
+        toast.error(result.message)
+      }
+    } finally {
+      setPending(false)
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <p className="text-sm text-muted-foreground mb-1">
-          How was your experience with <span className="font-medium text-foreground">{gearItemName}</span>?
+        <p className="mb-1 text-sm text-muted-foreground">
+          How was your experience with{" "}
+          <span className="font-medium text-foreground">{gearItemName}</span>?
         </p>
       </div>
 
@@ -63,30 +65,26 @@ export function ReviewForm({ rentalOrderId, gearItemName, onSuccess }: ReviewFor
             <button
               key={star}
               type="button"
-              onClick={() => {
-                setRating(star)
-                setValue("rating", star, { shouldValidate: true })
-              }}
+              aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`}
+              onClick={() => setValue("rating", star, { shouldValidate: true })}
               onMouseEnter={() => setHovered(star)}
               onMouseLeave={() => setHovered(0)}
-              className="text-2xl transition-colors cursor-pointer"
+              className="p-1 text-2xl transition-colors cursor-pointer"
             >
-              <span
+              <Star
+                weight={star <= (hovered || rating) ? "fill" : "regular"}
                 className={
                   star <= (hovered || rating)
                     ? "text-amber-400"
                     : "text-muted-foreground/30"
                 }
-              >
-                ★
-              </span>
+              />
             </button>
           ))}
         </div>
         {errors.rating && (
           <p className="text-xs text-red-500">{errors.rating.message}</p>
         )}
-        <input type="hidden" {...register("rating", { valueAsNumber: true })} />
       </div>
 
       <div className="space-y-2">
@@ -101,7 +99,11 @@ export function ReviewForm({ rentalOrderId, gearItemName, onSuccess }: ReviewFor
         />
       </div>
 
-      <Button type="submit" disabled={pending || rating === 0} className="w-full cursor-pointer">
+      <Button
+        type="submit"
+        disabled={pending || rating === 0}
+        className="w-full cursor-pointer"
+      >
         {pending ? "Submitting..." : "Submit Review"}
       </Button>
     </form>
