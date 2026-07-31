@@ -5,7 +5,7 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { useIncomingOrders, useUpdateOrderStatus } from "../../_hooks/useProvider"
 import { STATUS_LABELS, STATUS_STYLES } from "@/lib/badgeStyles"
-import { ORDER_TRANSITIONS } from "@/lib/orderTransitions"
+import { ORDER_TRANSITIONS, ORDER_CANCELLATIONS } from "@/lib/orderTransitions"
 import type { RentalStatus } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 
@@ -42,7 +42,7 @@ export function OrderTable() {
       { id, status },
       {
         onSuccess: () => {
-          toast.success("Order updated")
+          toast.success(status === "CANCELLED" ? "Order cancelled" : "Order updated")
         },
         onSettled: () => {
           setPendingOrderId(null)
@@ -82,6 +82,7 @@ export function OrderTable() {
         <tbody className="divide-y divide-border">
           {orders.map((order) => {
             const transition = ORDER_TRANSITIONS[order.status]
+            const cancellation = ORDER_CANCELLATIONS[order.status]
             return (
               <tr key={order.id} className="transition-colors hover:bg-muted/30">
                 <td className="px-5 py-4 font-medium">
@@ -115,19 +116,36 @@ export function OrderTable() {
                   </span>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  {transition && (
-                    <Button
-                      size="sm"
-                      disabled={pendingOrderId === order.id}
-                      onClick={() =>
-                        handleStatusChange(order.id, transition.next)
-                      }
-                    >
-                      {pendingOrderId === order.id
-                        ? "Updating..."
-                        : transition.label}
-                    </Button>
-                  )}
+                  <div className="flex items-center justify-end gap-2">
+                    {transition && (
+                      <Button
+                        size="sm"
+                        disabled={pendingOrderId === order.id}
+                        onClick={() =>
+                          handleStatusChange(order.id, transition.next)
+                        }
+                      >
+                        {pendingOrderId === order.id
+                          ? "Updating..."
+                          : transition.label}
+                      </Button>
+                    )}
+                    {cancellation && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-600"
+                        disabled={pendingOrderId === order.id}
+                        onClick={() =>
+                          handleStatusChange(order.id, cancellation.next)
+                        }
+                      >
+                        {pendingOrderId === order.id
+                          ? "Updating..."
+                          : cancellation.label}
+                      </Button>
+                    )}
+                  </div>
                 </td>
               </tr>
             )

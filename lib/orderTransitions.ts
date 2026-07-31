@@ -12,6 +12,13 @@ export const ORDER_TRANSITIONS: Partial<Record<RentalStatus, OrderTransition>> =
   PICKED_UP: { next: "RETURNED", label: "Mark Returned" },
 }
 
+// Provider-facing cancellations. The backend allows CANCELLED only from
+// PLACED/CONFIRMED, so a provider can cancel when the gear is unavailable.
+export const ORDER_CANCELLATIONS: Partial<Record<RentalStatus, OrderTransition>> = {
+  PLACED: { next: "CANCELLED", label: "Cancel" },
+  CONFIRMED: { next: "CANCELLED", label: "Cancel" },
+}
+
 export const ACTIVE_RENTAL_STATUSES: RentalStatus[] = [
   "PLACED",
   "CONFIRMED",
