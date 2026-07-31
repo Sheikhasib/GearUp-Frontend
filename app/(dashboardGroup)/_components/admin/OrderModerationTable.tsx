@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { useAdminOrders } from "../../_hooks/useAdmin"
 import {
@@ -9,6 +10,9 @@ import {
   PAYMENT_STATUS_STYLES,
 } from "@/lib/badgeStyles"
 import { CardField } from "@/components/shared/card-field"
+import { Pagination } from "@/components/shared/pagination"
+
+const PAGE_SIZE = 10
 
 const formatDate = (value: string) =>
   new Date(value).toLocaleDateString("en-GB", {
@@ -19,6 +23,7 @@ const formatDate = (value: string) =>
 
 export function OrderModerationTable() {
   const { data: orders, isLoading } = useAdminOrders()
+  const [page, setPage] = useState(1)
 
   if (isLoading) {
     return <div className="h-64 animate-pulse rounded-md bg-muted" />
@@ -31,6 +36,13 @@ export function OrderModerationTable() {
       </div>
     )
   }
+
+  const totalPages = Math.max(1, Math.ceil(orders.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const paged = orders.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  )
 
   return (
     <>
@@ -62,7 +74,7 @@ export function OrderModerationTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {orders.map((order) => {
+            {paged.map((order) => {
               const paymentStatus = order.payments?.[0]?.status
               return (
                 <tr key={order.id} className="transition-colors hover:bg-muted/30">
@@ -115,7 +127,7 @@ export function OrderModerationTable() {
       </div>
 
       <div className="space-y-3 sm:hidden">
-        {orders.map((order) => {
+        {paged.map((order) => {
           const paymentStatus = order.payments?.[0]?.status
           return (
             <div key={order.id} className="rounded-md border border-border bg-card p-4">
@@ -157,6 +169,12 @@ export function OrderModerationTable() {
           )
         })}
       </div>
+
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </>
   )
 }

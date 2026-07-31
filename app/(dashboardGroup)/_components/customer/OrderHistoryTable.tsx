@@ -9,6 +9,9 @@ import { STATUS_LABELS, STATUS_STYLES } from "@/lib/badgeStyles"
 import { ReviewDialog } from "./ReviewDialog"
 import { Button } from "@/components/ui/button"
 import { CardField } from "@/components/shared/card-field"
+import { Pagination } from "@/components/shared/pagination"
+
+const PAGE_SIZE = 10
 
 const formatDate = (value: string) =>
   new Date(value).toLocaleDateString("en-GB", {
@@ -20,6 +23,7 @@ const formatDate = (value: string) =>
 export function OrderHistoryTable() {
   const { data: orders, isLoading } = useCustomerOrders()
   const queryClient = useQueryClient()
+  const [page, setPage] = useState(1)
   const [reviewTarget, setReviewTarget] = useState<{
     id: string
     name: string
@@ -60,6 +64,13 @@ export function OrderHistoryTable() {
     )
   }
 
+  const totalPages = Math.max(1, Math.ceil(orders.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const paged = orders.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  )
+
   return (
     <>
       <div className="hidden overflow-x-auto rounded-md border border-border bg-card sm:block">
@@ -87,7 +98,7 @@ export function OrderHistoryTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {orders.map((order) => (
+            {paged.map((order) => (
               <tr key={order.id} className="transition-colors hover:bg-muted/30">
                 <td className="px-5 py-4 font-medium">
                   {order.gearItem?.name ?? "Gear"}
@@ -151,7 +162,7 @@ export function OrderHistoryTable() {
       </div>
 
       <div className="space-y-3 sm:hidden">
-        {orders.map((order) => (
+        {paged.map((order) => (
           <div key={order.id} className="rounded-md border border-border bg-card p-4">
             <div className="flex items-start justify-between gap-3">
               <p className="font-medium">{order.gearItem?.name ?? "Gear"}</p>
@@ -211,6 +222,12 @@ export function OrderHistoryTable() {
           </div>
         ))}
       </div>
+
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
 
       <ReviewDialog
         open={!!reviewTarget}

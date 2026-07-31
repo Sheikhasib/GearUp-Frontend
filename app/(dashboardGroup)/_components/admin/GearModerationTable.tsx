@@ -1,11 +1,16 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { useAdminGears } from "../../_hooks/useAdmin"
 import { CardField } from "@/components/shared/card-field"
+import { Pagination } from "@/components/shared/pagination"
+
+const PAGE_SIZE = 10
 
 export function GearModerationTable() {
   const { data: gears, isLoading } = useAdminGears()
+  const [page, setPage] = useState(1)
 
   if (isLoading) {
     return <div className="h-64 animate-pulse rounded-md bg-muted" />
@@ -18,6 +23,13 @@ export function GearModerationTable() {
       </div>
     )
   }
+
+  const totalPages = Math.max(1, Math.ceil(gears.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const paged = gears.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  )
 
   return (
     <>
@@ -46,7 +58,7 @@ export function GearModerationTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {gears.map((gear) => (
+            {paged.map((gear) => (
               <tr key={gear.id} className="transition-colors hover:bg-muted/30">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
@@ -105,7 +117,7 @@ export function GearModerationTable() {
       </div>
 
       <div className="space-y-3 sm:hidden">
-        {gears.map((gear) => (
+        {paged.map((gear) => (
           <div key={gear.id} className="rounded-md border border-border bg-card p-4">
             <div className="flex items-start gap-3">
               {gear.images?.[0] && (
@@ -154,6 +166,12 @@ export function GearModerationTable() {
           </div>
         ))}
       </div>
+
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </>
   )
 }
