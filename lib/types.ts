@@ -12,6 +12,7 @@ export interface IUser {
   phone?: string
   role: Role
   status: UserStatus
+  createdAt?: string
 }
 
 export interface ICategory {
@@ -35,7 +36,7 @@ export interface IGearItem {
   createdAt: string
   updatedAt: string
   category?: Pick<ICategory, "id" | "name">
-  provider?: Pick<IUser, "id" | "name">
+  provider?: Pick<IUser, "id" | "name" | "email">
   reviews?: IReview[]
   unavailableRanges?: { startDate: string; endDate: string }[]
 }
@@ -66,6 +67,7 @@ export interface IRentalOrder {
   updatedAt: string
   gearItem?: IGearItem
   customer?: IUser
+  payments?: { status: PaymentStatus }[]
   review?: IReview | null
 }
 

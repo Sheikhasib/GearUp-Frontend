@@ -29,3 +29,13 @@ export const PAYMENT_STATUS_STYLES: Record<string, string> = {
   FAILED: "text-red-600 bg-red-50 ring-red-200",
   CANCELLED: "text-gray-600 bg-gray-50 ring-gray-200",
 }
+
+export const USER_STATUS_LABELS: Record<string, string> = {
+  ACTIVE: "Active",
+  SUSPENDED: "Suspended",
+}
+
+export const USER_STATUS_STYLES: Record<string, string> = {
+  ACTIVE: "text-green-600 bg-green-50 ring-green-200",
+  SUSPENDED: "text-red-600 bg-red-50 ring-red-200",
+}

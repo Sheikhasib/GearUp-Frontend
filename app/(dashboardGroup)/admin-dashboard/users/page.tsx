@@ -1,20 +1,20 @@
-import { AdminOverviewClient } from "../_components/admin/AdminOverviewClient"
+import { UsersTable } from "../../_components/admin/UsersTable"
 
-const AdminDashboardPage = () => {
+const AdminUsersPage = () => {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="font-heading text-3xl font-bold tracking-tight">
-          Dashboard
+          Users
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Platform overview
+          Manage platform accounts
         </p>
       </div>
 
-      <AdminOverviewClient />
+      <UsersTable />
     </div>
   )
 }
 
-export default AdminDashboardPage
+export default AdminUsersPage

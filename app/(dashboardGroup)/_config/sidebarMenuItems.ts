@@ -1,6 +1,7 @@
 import { ISidebarItem } from "@/lib/types"
 import {
   CreditCard,
+  FolderSimple,
   Gauge,
   GearSix,
   Plus,
@@ -55,6 +56,26 @@ const ADMIN_SIDEBAR_ITEMS: ISidebarItem[] = [
     label: "Dashboard",
     href: "/admin-dashboard",
     icon: ShieldCheck,
+  },
+  {
+    label: "Users",
+    href: "/admin-dashboard/users",
+    icon: CreditCard,
+  },
+  {
+    label: "Gear",
+    href: "/admin-dashboard/gear",
+    icon: GearSix,
+  },
+  {
+    label: "Orders",
+    href: "/admin-dashboard/orders",
+    icon: Truck,
+  },
+  {
+    label: "Categories",
+    href: "/admin-dashboard/categories",
+    icon: FolderSimple,
   },
 ]
 

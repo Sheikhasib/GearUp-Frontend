@@ -1,20 +1,20 @@
-import { AdminOverviewClient } from "../_components/admin/AdminOverviewClient"
+import { CategoryManager } from "../../_components/admin/CategoryManager"
 
-const AdminDashboardPage = () => {
+const AdminCategoriesPage = () => {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="font-heading text-3xl font-bold tracking-tight">
-          Dashboard
+          Categories
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Platform overview
+          Manage the categories providers pick from
         </p>
       </div>
 
-      <AdminOverviewClient />
+      <CategoryManager />
     </div>
   )
 }
 
-export default AdminDashboardPage
+export default AdminCategoriesPage
