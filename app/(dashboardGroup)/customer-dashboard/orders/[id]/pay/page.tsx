@@ -47,7 +47,7 @@ const PayPage = async ({
       </Link>
 
       {error && (
-        <div className="mb-6 rounded-md bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200">
+        <div className="mb-6 rounded-md bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/30">
           {error}
         </div>
       )}
