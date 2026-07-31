@@ -10,7 +10,9 @@ export const registerSchema = z
     name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(4, "Password must be at least 4 characters"),
-    confirmPassword: z.string(),
+    confirmPassword: z
+      .string()
+      .min(4, "Confirm password must be at least 4 characters"),
     role: z.enum(["CUSTOMER", "PROVIDER"], {
       message: "Please select a role",
     }),

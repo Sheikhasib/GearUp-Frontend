@@ -2,10 +2,13 @@ import { z } from "zod"
 
 export const rentNowSchema = z
   .object({
-    gearItemId: z.string(),
-    startDate: z.string().datetime(),
-    endDate: z.string().datetime(),
-    quantity: z.number().int().min(1),
+    gearItemId: z.string().min(1, "Gear is required"),
+    startDate: z.string().datetime("Start date is required"),
+    endDate: z.string().datetime("End date is required"),
+    quantity: z
+      .number()
+      .int("Quantity must be a whole number")
+      .min(1, "Quantity must be at least 1"),
   })
   .refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
     message: "Start date must be on or before end date",
