@@ -65,6 +65,7 @@ export interface IRentalOrder {
   updatedAt: string
   gearItem?: IGearItem
   customer?: IUser
+  review?: IReview | null
 }
 
 export interface ICreateRentalPayload {

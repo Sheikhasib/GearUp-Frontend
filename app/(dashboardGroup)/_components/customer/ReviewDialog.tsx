@@ -14,9 +14,10 @@ interface ReviewDialogProps {
   onOpenChange: (open: boolean) => void
   rentalOrderId: string
   gearItemName: string
+  onSuccess: () => void
 }
 
-export function ReviewDialog({ open, onOpenChange, rentalOrderId, gearItemName }: ReviewDialogProps) {
+export function ReviewDialog({ open, onOpenChange, rentalOrderId, gearItemName, onSuccess }: ReviewDialogProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right">
@@ -30,7 +31,10 @@ export function ReviewDialog({ open, onOpenChange, rentalOrderId, gearItemName }
           <ReviewForm
             rentalOrderId={rentalOrderId}
             gearItemName={gearItemName}
-            onSuccess={() => onOpenChange(false)}
+            onSuccess={() => {
+              onSuccess()
+              onOpenChange(false)
+            }}
           />
         </div>
       </SheetContent>

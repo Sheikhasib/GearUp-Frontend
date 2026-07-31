@@ -15,3 +15,17 @@ export const STATUS_STYLES: Record<string, string> = {
   RETURNED: "text-gray-600 bg-gray-50 ring-gray-200",
   CANCELLED: "text-red-600 bg-red-50 ring-red-200",
 }
+
+export const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  PAID: "Paid",
+  PENDING: "Pending",
+  FAILED: "Failed",
+  CANCELLED: "Cancelled",
+}
+
+export const PAYMENT_STATUS_STYLES: Record<string, string> = {
+  PAID: "text-green-600 bg-green-50 ring-green-200",
+  PENDING: "text-amber-600 bg-amber-50 ring-amber-200",
+  FAILED: "text-red-600 bg-red-50 ring-red-200",
+  CANCELLED: "text-gray-600 bg-gray-50 ring-gray-200",
+}

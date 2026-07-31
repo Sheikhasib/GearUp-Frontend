@@ -2,16 +2,26 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useQueryClient } from "@tanstack/react-query"
 import { useCustomerOrders } from "../../_hooks/useCustomerOrders"
 import { STATUS_LABELS, STATUS_STYLES } from "@/lib/badgeStyles"
 import { ReviewDialog } from "./ReviewDialog"
 
 export function OrderHistoryTable() {
   const { data: orders, isLoading } = useCustomerOrders()
+  const queryClient = useQueryClient()
   const [reviewTarget, setReviewTarget] = useState<{
     id: string
     name: string
   } | null>(null)
+  const [reviewedOrderIds, setReviewedOrderIds] = useState<Set<string>>(
+    () => new Set()
+  )
+
+  const handleReviewSuccess = (orderId: string) => {
+    setReviewedOrderIds((prev) => new Set(prev).add(orderId))
+    queryClient.invalidateQueries({ queryKey: ["customer-orders"] })
+  }
 
   if (isLoading) {
     return (
@@ -75,20 +85,22 @@ export function OrderHistoryTable() {
                 </Link>
               )}
 
-              {order.status === "RETURNED" && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setReviewTarget({
-                      id: order.id,
-                      name: order.gearItem?.name ?? "Gear",
-                    })
-                  }
-                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
-                >
-                  Leave Review
-                </button>
-              )}
+              {order.status === "RETURNED" &&
+                !order.review &&
+                !reviewedOrderIds.has(order.id) && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReviewTarget({
+                        id: order.id,
+                        name: order.gearItem?.name ?? "Gear",
+                      })
+                    }
+                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
+                  >
+                    Leave Review
+                  </button>
+                )}
             </div>
           </div>
         ))}
@@ -101,6 +113,7 @@ export function OrderHistoryTable() {
         }}
         rentalOrderId={reviewTarget?.id ?? ""}
         gearItemName={reviewTarget?.name ?? ""}
+        onSuccess={() => handleReviewSuccess(reviewTarget?.id ?? "")}
       />
     </>
   )
