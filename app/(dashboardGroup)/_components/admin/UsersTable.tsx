@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 import { useAdminUsers, useUpdateUserStatus } from "../../_hooks/useAdmin"
 import { USER_STATUS_LABELS, USER_STATUS_STYLES } from "@/lib/badgeStyles"
 import type { UserStatus } from "@/lib/types"
+import { CardField } from "@/components/shared/card-field"
 
 const PAGE_SIZE = 10
 const ROLE_FILTERS = ["all", "CUSTOMER", "PROVIDER", "ADMIN"] as const
@@ -130,7 +131,7 @@ export function UsersTable() {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-md border border-border bg-card">
+      <div className="hidden overflow-x-auto rounded-md border border-border bg-card sm:block">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40">
@@ -199,6 +200,52 @@ export function UsersTable() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="space-y-3 sm:hidden">
+        {paged.map((user) => (
+          <div key={user.id} className="rounded-md border border-border bg-card p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{user.name}</p>
+                <p className="truncate text-xs text-muted-foreground">
+                  {user.email}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1.5">
+                <span className={`inline-block px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${USER_STATUS_STYLES[user.status] || "bg-gray-50 text-gray-600 ring-gray-200"}`}>
+                  {USER_STATUS_LABELS[user.status] || user.status}
+                </span>
+                <span className="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+                  {user.role}
+                </span>
+              </div>
+            </div>
+
+            <dl className="mt-3 grid grid-cols-2 gap-3">
+              <CardField label="Phone">{user.phone ?? "—"}</CardField>
+              <CardField label="Joined">{formatDate(user.createdAt ?? "")}</CardField>
+            </dl>
+
+            {user.role !== "ADMIN" && (
+              <div className="mt-3 border-t border-border pt-3">
+                <Button
+                  size="sm"
+                  variant={user.status === "ACTIVE" ? "destructive" : "default"}
+                  onClick={() =>
+                    setTarget({
+                      id: user.id,
+                      name: user.name,
+                      status: user.status,
+                    })
+                  }
+                >
+                  {user.status === "ACTIVE" ? "Suspend" : "Activate"}
+                </Button>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       {totalPages > 1 && (

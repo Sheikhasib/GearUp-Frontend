@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { CardField } from "@/components/shared/card-field"
 
 export function CategoryManager() {
   const { data: categories, isLoading } = useCategories()
@@ -118,7 +119,7 @@ export function CategoryManager() {
         </Button>
       </form>
 
-      <div className="overflow-x-auto rounded-md border border-border bg-card">
+      <div className="hidden overflow-x-auto rounded-md border border-border bg-card sm:block">
         <table className="w-full min-w-[560px] text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40">
@@ -242,6 +243,114 @@ export function CategoryManager() {
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className="space-y-3 sm:hidden">
+        {categories.map((category) => {
+          const gearCount = gearCountByCategory[category.id] ?? 0
+          const isEditing = editingId === category.id
+          const isInUse = gearCount > 0
+
+          return (
+            <div key={category.id} className="rounded-md border border-border bg-card p-4">
+              <div>
+                {isEditing ? (
+                  <Input
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    autoFocus
+                    className="w-full"
+                  />
+                ) : (
+                  <p className="font-medium">{category.name}</p>
+                )}
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {category.slug}
+                </p>
+              </div>
+
+              <dl className="mt-3 grid grid-cols-1 gap-3">
+                <CardField label="Gear Items">{gearCount}</CardField>
+              </dl>
+
+              <div className="mt-3 border-t border-border pt-3">
+                {isEditing ? (
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      disabled={isUpdating || !editingName.trim()}
+                      onClick={onEditSave}
+                    >
+                      <Check />
+                      Save
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingId(null)
+                        setEditingName("")
+                      }}
+                    >
+                      <X />
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingId(category.id)
+                        setEditingName(category.name)
+                      }}
+                    >
+                      <PencilLine />
+                      Edit
+                    </Button>
+
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          {isInUse ? (
+                            <span className="inline-flex">
+                              <Button variant="destructive" size="sm" disabled>
+                                <Trash />
+                                Delete
+                              </Button>
+                            </span>
+                          ) : (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() =>
+                                setCategoryToDelete({
+                                  id: category.id,
+                                  name: category.name,
+                                })
+                              }
+                            >
+                              <Trash />
+                              Delete
+                            </Button>
+                          )}
+                        </TooltipTrigger>
+                        {isInUse && (
+                          <TooltipContent>
+                            In use by {gearCount} gear item
+                            {gearCount === 1 ? "" : "s"}
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       <AlertDialog

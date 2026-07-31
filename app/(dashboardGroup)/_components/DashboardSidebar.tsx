@@ -11,7 +11,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar"
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ISidebarItem, IUser } from "@/lib/types"
@@ -40,6 +47,7 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ user }: DashboardSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const { openMobile, setOpenMobile } = useSidebar()
 
   let navItems: ISidebarItem[] = []
 
@@ -59,16 +67,17 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
       : null
 
   const handleLogout = async () => {
-    await logout()
-    toast.success("User Logged out successfully")
+    try {
+      await logout()
+      toast.success("User Logged out successfully")
+    } catch {
+      toast.error("Failed to log out. Please try again.")
+    }
     router.push("/login")
   }
 
-  return (
-    <Sidebar
-      collapsible="none"
-      className="sticky top-14 h-[calc(100svh-3.5rem)] border-r border-sidebar-border"
-    >
+  const sidebarContent = (
+    <>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-1.5">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
@@ -94,6 +103,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                   <SidebarMenuButton
                     asChild
                     isActive={item.href === activeHref}
+                    onClick={() => setOpenMobile(false)}
                   >
                     <Link href={item.href}>
                       <item.icon />
@@ -135,6 +145,31 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           </div>
         ) : null}
       </SidebarFooter>
-    </Sidebar>
+    </>
+  )
+
+  return (
+    <>
+      <Sidebar
+        collapsible="none"
+        className="sticky top-14 h-[calc(100svh-3.5rem)] border-r border-sidebar-border hidden md:flex"
+      >
+        {sidebarContent}
+      </Sidebar>
+
+      <Sheet open={openMobile} onOpenChange={setOpenMobile}>
+        <SheetContent
+          side="left"
+          showCloseButton={false}
+          className="w-72 bg-sidebar p-0 text-sidebar-foreground sm:max-w-xs"
+        >
+          <SheetTitle className="sr-only">Navigation</SheetTitle>
+          <SheetDescription className="sr-only">
+            Dashboard navigation menu
+          </SheetDescription>
+          <div className="flex h-full w-full flex-col">{sidebarContent}</div>
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }

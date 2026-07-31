@@ -122,14 +122,26 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
           </div>
         </div>
 
-        <DayPicker
-          mode="range"
-          selected={dateRange}
-          onSelect={setDateRange}
-          disabled={disabledMatchers}
-          numberOfMonths={2}
-          className="!m-0"
-        />
+        <div className="hidden sm:block">
+          <DayPicker
+            mode="range"
+            selected={dateRange}
+            onSelect={setDateRange}
+            disabled={disabledMatchers}
+            numberOfMonths={2}
+            className="!m-0"
+          />
+        </div>
+        <div className="sm:hidden">
+          <DayPicker
+            mode="range"
+            selected={dateRange}
+            onSelect={setDateRange}
+            disabled={disabledMatchers}
+            numberOfMonths={1}
+            className="!m-0"
+          />
+        </div>
       </div>
 
       <div className="space-y-2">

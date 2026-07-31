@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
+import { CardField } from "@/components/shared/card-field"
 import { useMyGear, useIncomingOrders, useDeleteGear } from "../../_hooks/useProvider"
 import { ACTIVE_RENTAL_STATUSES } from "@/lib/orderTransitions"
 
@@ -72,7 +73,7 @@ export function InventoryTable() {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-md border border-border bg-card">
+      <div className="hidden overflow-x-auto rounded-md border border-border bg-card sm:block">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/40">
@@ -131,8 +132,8 @@ export function InventoryTable() {
                     <span
                       className={`inline-block px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${
                         gear.isAvailable
-                          ? "text-green-600 bg-green-50 ring-green-200"
-                          : "text-red-600 bg-red-50 ring-red-200"
+                          ? "text-green-600 bg-green-50 ring-green-200 dark:text-green-400 dark:bg-green-400/10 dark:ring-green-400/30"
+                          : "text-red-600 bg-red-50 ring-red-200 dark:text-red-400 dark:bg-red-400/10 dark:ring-red-400/30"
                       }`}
                     >
                       {gear.isAvailable ? "Available" : "Unavailable"}
@@ -184,6 +185,92 @@ export function InventoryTable() {
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className="space-y-3 sm:hidden">
+        {gears.map((gear) => {
+          const hasActiveOrders = activeOrderGearIds.has(gear.id)
+          return (
+            <div key={gear.id} className="rounded-md border border-border bg-card p-4">
+              <div className="flex items-start gap-3">
+                {gear.images?.[0] && (
+                  <img
+                    src={gear.images[0]}
+                    alt={gear.name}
+                    className="h-14 w-14 shrink-0 rounded-md border border-border object-cover"
+                  />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium">{gear.name}</p>
+                  {gear.brand && (
+                    <p className="text-xs text-muted-foreground">{gear.brand}</p>
+                  )}
+                </div>
+                <span
+                  className={`inline-block shrink-0 px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${
+                    gear.isAvailable
+                      ? "text-green-600 bg-green-50 ring-green-200"
+                      : "text-red-600 bg-red-50 ring-red-200"
+                  }`}
+                >
+                  {gear.isAvailable ? "Available" : "Unavailable"}
+                </span>
+              </div>
+
+              <dl className="mt-3 grid grid-cols-2 gap-3">
+                <CardField label="Category">
+                  {gear.category?.name ?? "—"}
+                </CardField>
+                <CardField label="Stock">
+                  {gear.availableQuantity}/{gear.quantity}
+                </CardField>
+                <CardField label="Price / Day">
+                  ${Number(gear.priceRatePerDay).toFixed(2)}
+                </CardField>
+              </dl>
+
+              <div className="mt-3 flex flex-wrap gap-2 border-t border-border pt-3">
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/provider-dashboard/gear/${gear.id}/edit`}>
+                    <PencilLine />
+                    Edit
+                  </Link>
+                </Button>
+
+                <TooltipProvider delayDuration={0}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      {hasActiveOrders ? (
+                        <span className="inline-flex">
+                          <Button variant="destructive" size="sm" disabled>
+                            <Trash />
+                            Delete
+                          </Button>
+                        </span>
+                      ) : (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() =>
+                            setGearToDelete({ id: gear.id, name: gear.name })
+                          }
+                        >
+                          <Trash />
+                          Delete
+                        </Button>
+                      )}
+                    </TooltipTrigger>
+                    {hasActiveOrders && (
+                      <TooltipContent>
+                        Cannot delete — has active rentals
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       <Sheet
