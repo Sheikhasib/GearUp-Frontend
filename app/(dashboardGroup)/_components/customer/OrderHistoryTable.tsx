@@ -1,11 +1,17 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { useCustomerOrders } from "../../_hooks/useCustomerOrders"
 import { STATUS_LABELS, STATUS_STYLES } from "@/lib/badgeStyles"
+import { ReviewDialog } from "./ReviewDialog"
 
 export function OrderHistoryTable() {
   const { data: orders, isLoading } = useCustomerOrders()
+  const [reviewTarget, setReviewTarget] = useState<{
+    id: string
+    name: string
+  } | null>(null)
 
   if (isLoading) {
     return (
@@ -32,44 +38,70 @@ export function OrderHistoryTable() {
   }
 
   return (
-    <div className="space-y-4">
-      {orders.map((order) => (
-        <div
-          key={order.id}
-          className="flex flex-col justify-between gap-4 bg-card p-5 ring-1 ring-foreground/5 sm:flex-row sm:items-center"
-        >
-          <div className="min-w-0 space-y-1">
-            <p className="truncate font-heading font-semibold">
-              {order.gearItem?.name ?? "Gear"}
-            </p>
-            <div className="flex flex-wrap gap-x-4 text-sm text-muted-foreground">
-              <span>
-                {new Date(order.startDate).toLocaleDateString()} –{" "}
-                {new Date(order.endDate).toLocaleDateString()}
+    <>
+      <div className="space-y-4">
+        {orders.map((order) => (
+          <div
+            key={order.id}
+            className="flex flex-col justify-between gap-4 bg-card p-5 ring-1 ring-foreground/5 sm:flex-row sm:items-center"
+          >
+            <div className="min-w-0 space-y-1">
+              <p className="truncate font-heading font-semibold">
+                {order.gearItem?.name ?? "Gear"}
+              </p>
+              <div className="flex flex-wrap gap-x-4 text-sm text-muted-foreground">
+                <span>
+                  {new Date(order.startDate).toLocaleDateString()} –{" "}
+                  {new Date(order.endDate).toLocaleDateString()}
+                </span>
+                <span>x{order.quantity}</span>
+                <span>${order.totalPrice.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-3">
+              <span
+                className={`px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${STATUS_STYLES[order.status] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
+              >
+                {STATUS_LABELS[order.status] || order.status}
               </span>
-              <span>x{order.quantity}</span>
-              <span>${order.totalPrice.toLocaleString()}</span>
+
+              {order.status === "CONFIRMED" && (
+                <Link
+                  href={`/customer-dashboard/orders/${order.id}/pay`}
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  Pay Now
+                </Link>
+              )}
+
+              {order.status === "RETURNED" && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setReviewTarget({
+                      id: order.id,
+                      name: order.gearItem?.name ?? "Gear",
+                    })
+                  }
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
+                >
+                  Leave Review
+                </button>
+              )}
             </div>
           </div>
+        ))}
+      </div>
 
-          <div className="flex shrink-0 items-center gap-3">
-            <span
-              className={`px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${STATUS_STYLES[order.status] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
-            >
-              {STATUS_LABELS[order.status] || order.status}
-            </span>
-
-            {order.status === "CONFIRMED" && (
-              <Link
-                href={`/customer-dashboard/orders/${order.id}/pay`}
-                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                Pay Now
-              </Link>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
+      <ReviewDialog
+        open={!!reviewTarget}
+        onOpenChange={(open) => {
+          if (!open) setReviewTarget(null)
+        }}
+        rentalOrderId={reviewTarget?.id ?? ""}
+        gearItemName={reviewTarget?.name ?? ""}
+      />
+    </>
   )
 }
