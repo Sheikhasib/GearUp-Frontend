@@ -1,7 +1,10 @@
+import Link from "next/link"
 import { notFound } from "next/navigation"
+import { ArrowRight } from "@phosphor-icons/react/ssr"
 import { BackButton } from "./BackButton"
 import { GearImageGallery } from "../../_components/gear/GearImageGallery"
 import { RentNowPanel } from "../../_components/gear/RentNowPanel"
+import { ReviewItem } from "../../_components/gear/ReviewItem"
 import type { IGearItem, IReview } from "@/lib/types"
 
 const API_URL = process.env.BACKEND_API_URL || "http://localhost:4000"
@@ -94,28 +97,27 @@ export default async function GearDetailPage({
 
           {reviews && reviews.length > 0 && (
             <div className="space-y-4 border-t border-border pt-8">
-              <h2 className="font-heading text-xl font-bold tracking-tight">
-                Reviews ({reviews.length})
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="font-heading text-xl font-bold tracking-tight">
+                  Reviews ({reviews.length})
+                </h2>
+                <Link
+                  href={`/gears/${id}/reviews`}
+                  className="inline-flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary/80"
+                >
+                  View all reviews
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
               <div className="space-y-4">
                 {reviews.map((review) => (
-                  <div
+                  <ReviewItem
                     key={review.id}
-                    className="p-4 bg-muted/30 ring-1 ring-foreground/5"
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium">
-                        {review.customer?.name ?? "Anonymous"}
-                      </span>
-                      <span className="text-yellow-500 text-sm font-semibold">
-                        {"★".repeat(review.rating)}
-                        {"☆".repeat(5 - review.rating)}
-                      </span>
-                    </div>
-                    {review.comment && (
-                      <p className="text-sm text-muted-foreground">{review.comment}</p>
-                    )}
-                  </div>
+                    name={review.customer?.name ?? "Anonymous"}
+                    rating={review.rating}
+                    comment={review.comment}
+                    createdAt={review.createdAt}
+                  />
                 ))}
               </div>
             </div>
