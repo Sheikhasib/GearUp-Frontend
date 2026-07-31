@@ -5,12 +5,9 @@ import Link from "next/link"
 import { ArrowRight, House, MagnifyingGlass } from "@phosphor-icons/react"
 
 export default function NotFound() {
-  const [isLoaded, setIsLoaded] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
-    setIsLoaded(true)
-
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e
       const centerX = window.innerWidth / 2
@@ -36,26 +33,18 @@ export default function NotFound() {
       <div className="relative z-10 mx-auto max-w-2xl text-center">
         {/* 404 Number with 3D effect */}
         <div
-          className="mb-8 transition-transform duration-300 ease-out"
+          className="mb-8 animate-in fade-in-0 zoom-in-75 transition-transform duration-300 ease-out animation-duration-1000"
           style={{
             transform: `perspective(1000px) rotateX(${mousePosition.x}deg) rotateY(${mousePosition.y}deg)`,
           }}
         >
-          <div
-            className={`bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-9xl font-black text-transparent transition-all duration-1000 md:text-[180px] ${
-              isLoaded ? "scale-100 opacity-100" : "scale-75 opacity-0"
-            }`}
-          >
+          <div className="bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-9xl font-black text-transparent md:text-[180px]">
             404
           </div>
         </div>
 
         {/* Content */}
-        <div
-          className={`transition-all delay-200 duration-1000 ${
-            isLoaded ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-          }`}
-        >
+        <div className="animate-in slide-in-from-bottom-4 fade-in-0 delay-200 animation-duration-1000">
           <h1 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
             Page not found
           </h1>

@@ -2,7 +2,7 @@
 
 import { ErrorFallback } from "@/components/shared/error-fallback"
 
-export default function PublicGroupError({
+export default function GearsError({
   error,
   unstable_retry,
 }: {
