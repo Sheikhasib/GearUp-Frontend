@@ -34,8 +34,14 @@ export async function createPaymentAction(
     }
 
     paymentUrl = result.data?.paymentUrl?.paymentUrl ?? null
-  } catch {
-    redirect(`/customer-dashboard/orders/${rentalOrderId}/pay?error=Payment+initiation+failed`)
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message
+        ? error.message
+        : "Payment initiation failed"
+    redirect(
+      `/customer-dashboard/orders/${rentalOrderId}/pay?error=${encodeURIComponent(message)}`
+    )
   }
 
   if (paymentUrl) {

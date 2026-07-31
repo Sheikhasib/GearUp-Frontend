@@ -13,14 +13,18 @@ const LoginForm = () => {
   // to get the redirect url & pass it to the login action
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? "";
+  const registered = searchParams.get("registered") === "true";
 
   const [state, action, pending] = useActionState(
     loginAction.bind(null, redirectTo),
     { success: false, message: "" },
   );
-  // const router = useRouter();
 
-  console.log(state);
+  useEffect(() => {
+    if (registered) {
+      toast.success("Account created successfully. Please sign in.");
+    }
+  }, [registered]);
 
   useEffect(() => {
     if (!state?.message) return;

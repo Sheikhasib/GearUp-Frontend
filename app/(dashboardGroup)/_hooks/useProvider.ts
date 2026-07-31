@@ -40,6 +40,11 @@ export function useCreateGear() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-gear"] })
     },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create gear"
+      )
+    },
   })
 }
 
@@ -50,6 +55,11 @@ export function useUpdateGear(id: string) {
     mutationFn: (payload: IUpdateGearPayload) => updateGear(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-gear"] })
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update gear"
+      )
     },
   })
 }

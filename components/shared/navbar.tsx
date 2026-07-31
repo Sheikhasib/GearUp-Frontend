@@ -89,9 +89,13 @@ export function Navbar({ user }: NavbarProps) {
 
     // Logout action
     if (action === "logout") {
-      await logout()
+      try {
+        await logout()
+        toast.success("User Logged out successfully")
+      } catch {
+        toast.error("Failed to log out. Please try again.")
+      }
       clear() // clear the auth store
-      toast.success("User Logged out successfully")
       router.push("/login") // redirect to login page
     }
   }
