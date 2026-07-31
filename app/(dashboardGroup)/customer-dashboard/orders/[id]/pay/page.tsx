@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { createPaymentAction } from "../../../../_actions/paymentActions"
+import { createPaymentAction } from "../../../../_actions/payment/createPaymentAction"
 import { fetchRentalOrderServer } from "@/service/fetchRentalOrderServer"
 
 const PayPage = async ({

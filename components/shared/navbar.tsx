@@ -21,7 +21,6 @@ import {
   User,
   UserPlus,
   Gauge,
-  CreditCard,
   GearSix,
   Sun,
   Moon,
@@ -59,7 +58,6 @@ const navItems = [
 const userMenuItems = [
   { label: "Profile", href: "/profile", icon: User },
   { label: "Dashboard", action: "dashboard", icon: Gauge },
-  { label: "Payment", href: "/payment", icon: CreditCard },
   { label: "Settings", href: "/settings", icon: GearSix },
 ]
 

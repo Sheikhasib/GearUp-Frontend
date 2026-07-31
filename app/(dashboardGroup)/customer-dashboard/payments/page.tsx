@@ -1,4 +1,4 @@
-import { PaymentHistoryTable } from "../../_components/customer/PaymentHistoryTable"
+import { PaymentHistoryTable } from "../../_components/payment/PaymentHistoryTable"
 
 const CustomerPaymentsPage = async () => {
   return (
