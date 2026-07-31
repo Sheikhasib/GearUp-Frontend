@@ -1,3 +1,5 @@
+import type { Icon } from "@phosphor-icons/react"
+
 export type Role = "CUSTOMER" | "PROVIDER" | "ADMIN"
 export type UserStatus = "ACTIVE" | "SUSPENDED"
 export type RentalStatus = "PLACED" | "CONFIRMED" | "PAID" | "PICKED_UP" | "RETURNED" | "CANCELLED"
@@ -118,4 +120,10 @@ export interface IGearQuery {
   limit?: number
   sortBy?: string
   sortOrder?: "asc" | "desc"
+}
+
+export type ISidebarItem = {
+  label: string
+  href: string
+  icon: Icon
 }

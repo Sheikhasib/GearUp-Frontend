@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { getPaymentStatus } from "../../_actions/payment/getPaymentStatus"
-import { fetchRentalOrderServer } from "@/lib/api/rentals"
+import { fetchRentalOrderServer } from "@/service/fetchRentalOrderServer"
 
 const PaymentCancelPage = async ({
   searchParams,
