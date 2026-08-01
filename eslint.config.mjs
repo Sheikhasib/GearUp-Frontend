@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Gitignored scratch/temp dirs that are not part of the app.
+    "temp_example_back/**",
+    "temp_example_front/**",
+    "temp_gearup_backend/**",
   ]),
 ]);
 
