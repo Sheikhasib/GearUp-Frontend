@@ -20,13 +20,13 @@ const STAT_CARDS = [
   {
     key: "activeRentals",
     label: "Active Rentals",
-    href: "/provider-dashboard/orders",
+    href: "/provider-dashboard/orders?status=active",
     icon: Truck,
   },
   {
     key: "pendingOrders",
     label: "Pending Orders",
-    href: "/provider-dashboard/orders",
+    href: "/provider-dashboard/orders?status=PLACED",
     icon: Timer,
   },
 ] as const

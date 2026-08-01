@@ -2,13 +2,38 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useIncomingOrders, useUpdateOrderStatus } from "../../_hooks/useProvider"
 import { STATUS_LABELS, STATUS_STYLES } from "@/lib/badgeStyles"
-import { ORDER_TRANSITIONS, ORDER_CANCELLATIONS } from "@/lib/orderTransitions"
+import {
+  ORDER_TRANSITIONS,
+  ORDER_CANCELLATIONS,
+  ACTIVE_RENTAL_STATUSES,
+} from "@/lib/orderTransitions"
 import type { RentalStatus } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { CardField } from "@/components/shared/card-field"
+import { Pagination } from "@/components/shared/pagination"
+import { cn } from "@/lib/utils"
+
+const PAGE_SIZE = 10
+
+const ORDER_STATUSES: RentalStatus[] = [
+  "PLACED",
+  "CONFIRMED",
+  "PAID",
+  "PICKED_UP",
+  "RETURNED",
+  "CANCELLED",
+]
+
+const FILTER_TABS = [
+  { key: "all", label: "All" },
+  { key: "PLACED", label: "Pending" },
+  { key: "active", label: "Active" },
+  { key: "completed", label: "Completed" },
+] as const
 
 const formatDate = (value: string) =>
   new Date(value).toLocaleDateString("en-GB", {
@@ -21,6 +46,18 @@ export function OrderTable() {
   const { data: orders, isLoading } = useIncomingOrders()
   const { mutate: updateStatus } = useUpdateOrderStatus()
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const statusParam = searchParams.get("status")
+  const activeFilter = statusParam === "active"
+  const completedFilter = statusParam === "completed"
+  const statusFilter =
+    statusParam && (ORDER_STATUSES as string[]).includes(statusParam)
+      ? (statusParam as RentalStatus)
+      : null
+  const currentFilter = statusFilter ?? (activeFilter ? "active" : completedFilter ? "completed" : "all")
 
   if (isLoading) {
     return <div className="h-64 animate-pulse rounded-md bg-muted" />
@@ -52,8 +89,68 @@ export function OrderTable() {
     )
   }
 
+  const handleFilterChange = (filter: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (filter === "all") params.delete("status")
+    else params.set("status", filter)
+    setPage(1)
+    const qs = params.toString()
+    router.replace(`/provider-dashboard/orders${qs ? `?${qs}` : ""}`, {
+      scroll: false,
+    })
+  }
+
+  const filtered = orders.filter((order) => {
+    if (activeFilter) return ACTIVE_RENTAL_STATUSES.includes(order.status)
+    if (completedFilter) return order.status === "RETURNED" || order.status === "CANCELLED"
+    if (statusFilter) return order.status === statusFilter
+    return true
+  })
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const paged = filtered.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  )
+
+  const filterTabs = (
+    <div className="mb-4 flex flex-wrap gap-2">
+      {FILTER_TABS.map((tab) => (
+        <button
+          key={tab.key}
+          type="button"
+          onClick={() => handleFilterChange(tab.key)}
+          className={cn(
+            "inline-flex h-8 cursor-pointer items-center rounded-md border px-3 text-xs font-semibold tracking-widest uppercase transition-colors",
+            currentFilter === tab.key
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  )
+
+  if (filtered.length === 0) {
+    return (
+      <>
+        {filterTabs}
+        <div className="rounded-md border border-border py-20 text-center">
+          <p className="text-lg text-foreground">No orders match this view</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Try a different filter.
+          </p>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
+      {filterTabs}
       <div className="hidden overflow-x-auto rounded-md border border-border bg-card sm:block">
         <table className="w-full min-w-[860px] text-left text-sm">
           <thead>
@@ -82,7 +179,7 @@ export function OrderTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {orders.map((order) => {
+            {paged.map((order) => {
               const transition = ORDER_TRANSITIONS[order.status]
               const cancellation = ORDER_CANCELLATIONS[order.status]
               return (
@@ -157,7 +254,7 @@ export function OrderTable() {
       </div>
 
       <div className="space-y-3 sm:hidden">
-        {orders.map((order) => {
+        {paged.map((order) => {
           const transition = ORDER_TRANSITIONS[order.status]
           const cancellation = ORDER_CANCELLATIONS[order.status]
           return (
@@ -233,6 +330,12 @@ export function OrderTable() {
           )
         })}
       </div>
+
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </>
   )
 }

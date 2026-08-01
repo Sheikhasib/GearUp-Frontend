@@ -19,8 +19,11 @@ import {
 } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
 import { CardField } from "@/components/shared/card-field"
+import { Pagination } from "@/components/shared/pagination"
 import { useMyGear, useIncomingOrders, useDeleteGear } from "../../_hooks/useProvider"
 import { ACTIVE_RENTAL_STATUSES } from "@/lib/orderTransitions"
+
+const PAGE_SIZE = 10
 
 export function InventoryTable() {
   const { data: gears, isLoading } = useMyGear()
@@ -30,6 +33,7 @@ export function InventoryTable() {
     id: string
     name: string
   } | null>(null)
+  const [page, setPage] = useState(1)
 
   const activeOrderGearIds = new Set(
     (orders ?? [])
@@ -71,6 +75,13 @@ export function InventoryTable() {
     })
   }
 
+  const totalPages = Math.max(1, Math.ceil(gears.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const paged = gears.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  )
+
   return (
     <>
       <div className="hidden overflow-x-auto rounded-md border border-border bg-card sm:block">
@@ -98,7 +109,7 @@ export function InventoryTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {gears.map((gear) => {
+            {paged.map((gear) => {
               const hasActiveOrders = activeOrderGearIds.has(gear.id)
               return (
                 <tr key={gear.id} className="transition-colors hover:bg-muted/30">
@@ -188,7 +199,7 @@ export function InventoryTable() {
       </div>
 
       <div className="space-y-3 sm:hidden">
-        {gears.map((gear) => {
+        {paged.map((gear) => {
           const hasActiveOrders = activeOrderGearIds.has(gear.id)
           return (
             <div key={gear.id} className="rounded-md border border-border bg-card p-4">
@@ -272,6 +283,12 @@ export function InventoryTable() {
           )
         })}
       </div>
+
+      <Pagination
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
 
       <Sheet
         open={!!gearToDelete}
