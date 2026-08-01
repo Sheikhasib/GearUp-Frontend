@@ -73,3 +73,20 @@ Checked only after confirming the behaviour in the running app.
 - [x] `npm run typecheck` passes
 - [x] `eslint` passes (warnings only, all pre-existing)
 - [x] `next build` passes
+
+## §12 Deployment & Submission (Spec 08)
+
+- [x] `next.config.ts` remote images whitelist trimmed to `res.cloudinary.com`
+- [x] `.env.example` committed with placeholders; `.env` stays untracked
+- [x] `README.md` rewritten: live URL, backend repo link, seeded admin
+      credentials (`admin@gearup.com` / `Admin123!`), local setup instructions
+- [x] `API_INTEGRATION.md` created from the actual endpoint inventory
+- [x] Commit count ≥ 20 with conventional prefixes (35 + DoD commits)
+- [x] Frontend deployed on Vercel with all 5 env vars
+- [ ] Backend env confirmed: `FRONTEND_URL` = deployed frontend,
+      `BACKEND_PUBLIC_URL` includes `https://` scheme
+- [ ] SSLCommerz sandbox loop tested against deployed URLs (not localhost)
+- [ ] Admin credentials verified on the deployed URL
+- [ ] Video / examiner walkthrough recorded — outline in
+      `docs/PROJECT_WALKTHROUGH.md`
+- [ ] `docs/plans/08-deployment-and-submission.md` reflects the final state
