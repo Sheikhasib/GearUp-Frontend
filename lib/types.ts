@@ -67,7 +67,14 @@ export interface IRentalOrder {
   updatedAt: string
   gearItem?: IGearItem
   customer?: IUser
-  payments?: { status: PaymentStatus }[]
+  payments?: {
+    id?: string
+    status: PaymentStatus
+    tranId?: string
+    amount?: number
+    method?: string
+    paidAt?: string
+  }[]
   review?: IReview | null
 }
 

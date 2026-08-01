@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useIncomingOrders, useUpdateOrderStatus } from "../../_hooks/useProvider"
-import { STATUS_LABELS, STATUS_STYLES } from "@/lib/badgeStyles"
+import { STATUS_LABELS, STATUS_STYLES, PAYMENT_STATUS_LABELS, PAYMENT_STATUS_STYLES, cleanMethodLabel, effectivePayment } from "@/lib/badgeStyles"
 import {
   ORDER_TRANSITIONS,
   ORDER_CANCELLATIONS,
@@ -173,6 +173,9 @@ export function OrderTable() {
               <th className="px-5 py-3 text-center text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
                 Status
               </th>
+              <th className="px-5 py-3 text-center text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+                Payment
+              </th>
               <th className="px-5 py-3 text-right text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
                 Action
               </th>
@@ -182,6 +185,8 @@ export function OrderTable() {
             {paged.map((order) => {
               const transition = ORDER_TRANSITIONS[order.status]
               const cancellation = ORDER_CANCELLATIONS[order.status]
+              const payment = effectivePayment(order.payments)
+              const paymentStatus = payment?.status
               return (
                 <tr key={order.id} className="transition-colors hover:bg-muted/30">
                   <td className="px-5 py-4 font-medium">
@@ -213,6 +218,27 @@ export function OrderTable() {
                     >
                       {STATUS_LABELS[order.status] || order.status}
                     </span>
+                  </td>
+                  <td className="px-5 py-4 text-center">
+                    {payment ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <span
+                          className={`inline-block px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${PAYMENT_STATUS_STYLES[paymentStatus!] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
+                        >
+                          {PAYMENT_STATUS_LABELS[paymentStatus!] || paymentStatus}
+                        </span>
+                        {payment.tranId && (
+                          <span className="font-mono text-[10px] text-muted-foreground">
+                            {cleanMethodLabel(payment.method) && (
+                              <>{cleanMethodLabel(payment.method)} · </>
+                            )}
+                            {payment.tranId}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
                   </td>
                   <td className="px-5 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -257,6 +283,8 @@ export function OrderTable() {
         {paged.map((order) => {
           const transition = ORDER_TRANSITIONS[order.status]
           const cancellation = ORDER_CANCELLATIONS[order.status]
+          const payment = effectivePayment(order.payments)
+          const paymentStatus = payment?.status
           return (
             <div
               key={order.id}
@@ -291,6 +319,27 @@ export function OrderTable() {
                 <CardField label="Qty">x{order.quantity}</CardField>
                 <CardField label="Total">
                   ${Number(order.totalPrice).toLocaleString()}
+                </CardField>
+                <CardField label="Payment">
+                  {payment ? (
+                    <span className="flex flex-col gap-1">
+                      <span
+                        className={`inline-block self-start px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${PAYMENT_STATUS_STYLES[paymentStatus!] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
+                      >
+                        {PAYMENT_STATUS_LABELS[paymentStatus!] || paymentStatus}
+                      </span>
+                      {payment.tranId && (
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {cleanMethodLabel(payment.method) && (
+                            <>{cleanMethodLabel(payment.method)} · </>
+                          )}
+                          {payment.tranId}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    "—"
+                  )}
                 </CardField>
               </dl>
 

@@ -8,6 +8,8 @@ import {
   STATUS_STYLES,
   PAYMENT_STATUS_LABELS,
   PAYMENT_STATUS_STYLES,
+  cleanMethodLabel,
+  effectivePayment,
 } from "@/lib/badgeStyles"
 import { CardField } from "@/components/shared/card-field"
 import { Pagination } from "@/components/shared/pagination"
@@ -75,7 +77,8 @@ export function OrderModerationTable() {
           </thead>
           <tbody className="divide-y divide-border">
             {paged.map((order) => {
-              const paymentStatus = order.payments?.[0]?.status
+              const payment = effectivePayment(order.payments)
+              const paymentStatus = payment?.status
               return (
                 <tr key={order.id} className="transition-colors hover:bg-muted/30">
                   <td className="px-5 py-4">
@@ -109,12 +112,22 @@ export function OrderModerationTable() {
                     </span>
                   </td>
                   <td className="px-5 py-4 text-center">
-                    {paymentStatus ? (
-                      <span
-                        className={`inline-block px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${PAYMENT_STATUS_STYLES[paymentStatus] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
-                      >
-                        {PAYMENT_STATUS_LABELS[paymentStatus] || paymentStatus}
-                      </span>
+                    {payment ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <span
+                          className={`inline-block px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${PAYMENT_STATUS_STYLES[paymentStatus!] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
+                        >
+                          {PAYMENT_STATUS_LABELS[paymentStatus!] || paymentStatus}
+                        </span>
+                        {payment.tranId && (
+                          <span className="font-mono text-[10px] text-muted-foreground">
+                            {cleanMethodLabel(payment.method) && (
+                              <>{cleanMethodLabel(payment.method)} · </>
+                            )}
+                            {payment.tranId}
+                          </span>
+                        )}
+                      </div>
                     ) : (
                       <span className="text-muted-foreground">—</span>
                     )}
@@ -128,7 +141,8 @@ export function OrderModerationTable() {
 
       <div className="space-y-3 sm:hidden">
         {paged.map((order) => {
-          const paymentStatus = order.payments?.[0]?.status
+          const payment = effectivePayment(order.payments)
+          const paymentStatus = payment?.status
           return (
             <div key={order.id} className="rounded-md border border-border bg-card p-4">
               <div className="flex items-start justify-between gap-3">
@@ -160,9 +174,25 @@ export function OrderModerationTable() {
                   ${Number(order.totalPrice).toLocaleString()}
                 </CardField>
                 <CardField label="Payment">
-                  {paymentStatus
-                    ? PAYMENT_STATUS_LABELS[paymentStatus] || paymentStatus
-                    : "—"}
+                  {payment ? (
+                    <span className="flex flex-col gap-1">
+                      <span
+                        className={`inline-block self-start px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${PAYMENT_STATUS_STYLES[paymentStatus!] || "bg-gray-50 text-gray-600 ring-gray-200"}`}
+                      >
+                        {PAYMENT_STATUS_LABELS[paymentStatus!] || paymentStatus}
+                      </span>
+                      {payment.tranId && (
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {cleanMethodLabel(payment.method) && (
+                            <>{cleanMethodLabel(payment.method)} · </>
+                          )}
+                          {payment.tranId}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    "—"
+                  )}
                 </CardField>
               </dl>
             </div>

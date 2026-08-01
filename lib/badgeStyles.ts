@@ -48,3 +48,22 @@ export const USER_STATUS_STYLES: Record<string, string> = {
   SUSPENDED:
     "text-red-600 bg-red-50 ring-red-200 dark:text-red-400 dark:bg-red-400/10 dark:ring-red-400/30",
 }
+
+export const cleanMethodLabel = (method?: string) => {
+  if (!method) return ""
+  const afterDash = method.split("-")[1]?.trim()
+  return afterDash || method
+}
+
+export const effectivePayment = <
+  T extends { status?: string; paidAt?: string | null } | undefined,
+>(
+  payments?: T[]
+): T | undefined => {
+  if (!payments || payments.length === 0) return undefined
+  return (
+    payments.find((p) => p?.status === "PAID") ??
+    payments.find((p) => p?.status !== "PENDING") ??
+    payments[0]
+  )
+}

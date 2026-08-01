@@ -2,15 +2,12 @@
 
 import Link from "next/link"
 import { useCustomerPayments } from "../../_hooks/useCustomerPayments"
-import { PAYMENT_STATUS_LABELS, PAYMENT_STATUS_STYLES } from "@/lib/badgeStyles"
+import {
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_STYLES,
+  cleanMethodLabel,
+} from "@/lib/badgeStyles"
 import { CardField } from "@/components/shared/card-field"
-
-const cleanMethodLabel = (method?: string) => {
-  if (!method) return "—"
-  const afterDash = method.split("-")[1]?.trim()
-  if (afterDash) return afterDash
-  return method
-}
 
 const formatDate = (value?: string) => {
   if (!value) return "—"
@@ -66,7 +63,7 @@ export function PaymentHistoryTable() {
             {payments.map((payment) => (
               <tr key={payment.id} className="transition-colors hover:bg-muted/30">
                 <td className="px-5 py-4">
-                  <p className="font-medium">{cleanMethodLabel(payment.method)}</p>
+                  <p className="font-medium">{cleanMethodLabel(payment.method) || "—"}</p>
                   <p className="font-mono text-xs text-muted-foreground">
                     {payment.tranId}
                   </p>
@@ -95,7 +92,7 @@ export function PaymentHistoryTable() {
           <div key={payment.id} className="rounded-md border border-border bg-card p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="font-medium">{cleanMethodLabel(payment.method)}</p>
+                <p className="font-medium">{cleanMethodLabel(payment.method) || "—"}</p>
                 <p className="truncate font-mono text-xs text-muted-foreground">
                   {payment.tranId}
                 </p>
