@@ -36,6 +36,30 @@ export function areDateRangesOverlapping(
   })
 }
 
+export function getAvailableQuantityForDate(
+  date: Date,
+  total: number,
+  dailyAvailability?: Record<string, number>
+): number {
+  if (!dailyAvailability) return total
+  return dailyAvailability[toLocalDateKey(date)] ?? total
+}
+
+export function getMinAvailableQuantity(
+  from: Date,
+  to: Date,
+  total: number,
+  dailyAvailability?: Record<string, number>
+): number {
+  const cursor = new Date(from)
+  let min = total
+  while (cursor <= to) {
+    min = Math.min(min, getAvailableQuantityForDate(cursor, total, dailyAvailability))
+    cursor.setDate(cursor.getDate() + 1)
+  }
+  return min
+}
+
 export const rentNowSchema = z
   .object({
     gearItemId: z.string().min(1, "Gear is required"),

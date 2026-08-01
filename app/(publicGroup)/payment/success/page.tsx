@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { getPaymentStatus } from "../../_actions/payment/getPaymentStatus"
 import { fetchRentalOrderServer } from "@/service/fetchRentalOrderServer"
+import { formatRentalPeriod } from "@/lib/utils"
 
 const PaymentSuccessPage = async ({
   searchParams,
@@ -78,8 +79,7 @@ const PaymentSuccessPage = async ({
           <div className="flex justify-between">
             <span className="text-muted-foreground">Period</span>
             <span>
-              {new Date(order.startDate).toLocaleDateString()} –{" "}
-              {new Date(order.endDate).toLocaleDateString()}
+              {formatRentalPeriod(order.startDate, order.endDate)}
             </span>
           </div>
           <div className="flex justify-between">

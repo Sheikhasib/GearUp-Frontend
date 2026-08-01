@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
-import { CaretLeft, CaretRight } from "@phosphor-icons/react"
 import {
   AlertDialog,
   AlertDialogContent,
@@ -17,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAdminUsers, useUpdateUserStatus } from "../../_hooks/useAdmin"
 import { USER_STATUS_LABELS, USER_STATUS_STYLES } from "@/lib/badgeStyles"
+import { Pagination } from "@/components/shared/pagination"
 import type { UserStatus } from "@/lib/types"
 import { CardField } from "@/components/shared/card-field"
 
@@ -248,31 +248,13 @@ export function UsersTable() {
         ))}
       </div>
 
-      {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-end gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            <CaretLeft />
-            Prev
-          </Button>
-          <span className="px-2 text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage >= totalPages}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Next
-            <CaretRight />
-          </Button>
-        </div>
-      )}
+      <div className="mt-4">
+        <Pagination
+          page={currentPage}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
 
       <AlertDialog open={!!target} onOpenChange={(open) => !open && setTarget(null)}>
         <AlertDialogContent>

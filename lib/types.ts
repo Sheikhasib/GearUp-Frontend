@@ -39,6 +39,7 @@ export interface IGearItem {
   provider?: Pick<IUser, "id" | "name" | "email">
   reviews?: IReview[]
   unavailableRanges?: { startDate: string; endDate: string }[]
+  dailyAvailability?: Record<string, number>
 }
 
 export interface ICreateGearPayload {

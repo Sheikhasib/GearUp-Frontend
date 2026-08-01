@@ -64,9 +64,11 @@ export function PaymentHistoryTable() {
               <tr key={payment.id} className="transition-colors hover:bg-muted/30">
                 <td className="px-5 py-4">
                   <p className="font-medium">{cleanMethodLabel(payment.method) || "—"}</p>
-                  <p className="font-mono text-xs text-muted-foreground">
-                    {payment.tranId}
-                  </p>
+                  {payment.status === "PAID" && (
+                    <p className="font-mono text-xs text-muted-foreground">
+                      {payment.tranId}
+                    </p>
+                  )}
                 </td>
                 <td className="px-5 py-4 text-muted-foreground">
                   {formatDate(payment.paidAt)}
@@ -93,9 +95,11 @@ export function PaymentHistoryTable() {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="font-medium">{cleanMethodLabel(payment.method) || "—"}</p>
-                <p className="truncate font-mono text-xs text-muted-foreground">
-                  {payment.tranId}
-                </p>
+                {payment.status === "PAID" && (
+                  <p className="truncate font-mono text-xs text-muted-foreground">
+                    {payment.tranId}
+                  </p>
+                )}
               </div>
               <span
                 className={`inline-block shrink-0 px-2 py-0.5 text-[10px] font-semibold tracking-widest uppercase ring-1 ${PAYMENT_STATUS_STYLES[payment.status] || "bg-gray-50 text-gray-600 ring-gray-200"}`}

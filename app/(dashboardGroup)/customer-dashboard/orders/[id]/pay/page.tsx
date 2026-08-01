@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import { createPaymentAction } from "../../../../_actions/payment/createPaymentAction"
 import { fetchRentalOrderServer } from "@/service/fetchRentalOrderServer"
+import { formatRentalDay, formatRentalEndDate } from "@/lib/utils"
 
 const PayPage = async ({
   params,
@@ -69,13 +70,13 @@ const PayPage = async ({
             <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
               Start Date
             </p>
-            <p>{new Date(order.startDate).toLocaleDateString()}</p>
+            <p>{formatRentalDay(order.startDate)}</p>
           </div>
           <div className="space-y-1">
             <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">
               End Date
             </p>
-            <p>{new Date(order.endDate).toLocaleDateString()}</p>
+            <p>{formatRentalEndDate(order.endDate)}</p>
           </div>
           <div className="space-y-1">
             <p className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground">

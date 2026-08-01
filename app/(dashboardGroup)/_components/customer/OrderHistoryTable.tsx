@@ -17,15 +17,9 @@ import { ReviewDialog } from "./ReviewDialog"
 import { Button } from "@/components/ui/button"
 import { CardField } from "@/components/shared/card-field"
 import { Pagination } from "@/components/shared/pagination"
+import { formatRentalPeriod } from "@/lib/utils"
 
 const PAGE_SIZE = 10
-
-const formatDate = (value: string) =>
-  new Date(value).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
 
 export function OrderHistoryTable() {
   const { data: orders, isLoading } = useCustomerOrders()
@@ -117,7 +111,7 @@ export function OrderHistoryTable() {
                   {order.gearItem?.name ?? "Gear"}
                 </td>
                 <td className="px-5 py-4 text-muted-foreground">
-                  {formatDate(order.startDate)} – {formatDate(order.endDate)}
+                  {formatRentalPeriod(order.startDate, order.endDate)}
                 </td>
                 <td className="px-5 py-4 text-center">x{order.quantity}</td>
                 <td className="px-5 py-4 text-right font-heading font-bold">
@@ -138,7 +132,7 @@ export function OrderHistoryTable() {
                       >
                         {PAYMENT_STATUS_LABELS[paymentStatus!] || paymentStatus}
                       </span>
-                      {payment.tranId && (
+                      {paymentStatus === "PAID" && payment.tranId && (
                         <span className="font-mono text-[10px] text-muted-foreground">
                           {cleanMethodLabel(payment.method) && (
                             <>{cleanMethodLabel(payment.method)} · </>
@@ -213,7 +207,7 @@ export function OrderHistoryTable() {
 
             <dl className="mt-3 grid grid-cols-2 gap-3">
               <CardField label="Period">
-                {formatDate(order.startDate)} – {formatDate(order.endDate)}
+                {formatRentalPeriod(order.startDate, order.endDate)}
               </CardField>
               <CardField label="Qty">x{order.quantity}</CardField>
               <CardField label="Total">
@@ -227,7 +221,7 @@ export function OrderHistoryTable() {
                     >
                       {PAYMENT_STATUS_LABELS[paymentStatus!] || paymentStatus}
                     </span>
-                    {payment.tranId && (
+                    {paymentStatus === "PAID" && payment.tranId && (
                       <span className="font-mono text-xs text-muted-foreground">
                         {cleanMethodLabel(payment.method) && (
                           <>{cleanMethodLabel(payment.method)} · </>

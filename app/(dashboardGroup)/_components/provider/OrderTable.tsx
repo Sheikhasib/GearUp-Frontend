@@ -12,6 +12,7 @@ import {
   ACTIVE_RENTAL_STATUSES,
 } from "@/lib/orderTransitions"
 import type { RentalStatus } from "@/lib/types"
+import { formatRentalPeriod } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { CardField } from "@/components/shared/card-field"
 import { Pagination } from "@/components/shared/pagination"
@@ -34,13 +35,6 @@ const FILTER_TABS = [
   { key: "active", label: "Active" },
   { key: "completed", label: "Completed" },
 ] as const
-
-const formatDate = (value: string) =>
-  new Date(value).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
 
 export function OrderTable() {
   const { data: orders, isLoading } = useIncomingOrders()
@@ -206,7 +200,7 @@ export function OrderTable() {
                     )}
                   </td>
                   <td className="px-5 py-4 text-muted-foreground">
-                    {formatDate(order.startDate)} – {formatDate(order.endDate)}
+                    {formatRentalPeriod(order.startDate, order.endDate)}
                   </td>
                   <td className="px-5 py-4 text-center">x{order.quantity}</td>
                   <td className="px-5 py-4 text-right font-heading font-bold">
@@ -227,7 +221,7 @@ export function OrderTable() {
                         >
                           {PAYMENT_STATUS_LABELS[paymentStatus!] || paymentStatus}
                         </span>
-                        {payment.tranId && (
+                        {paymentStatus === "PAID" && payment.tranId && (
                           <span className="font-mono text-[10px] text-muted-foreground">
                             {cleanMethodLabel(payment.method) && (
                               <>{cleanMethodLabel(payment.method)} · </>
@@ -314,7 +308,7 @@ export function OrderTable() {
 
               <dl className="mt-3 grid grid-cols-2 gap-3">
                 <CardField label="Period">
-                  {formatDate(order.startDate)} – {formatDate(order.endDate)}
+                  {formatRentalPeriod(order.startDate, order.endDate)}
                 </CardField>
                 <CardField label="Qty">x{order.quantity}</CardField>
                 <CardField label="Total">
@@ -328,7 +322,7 @@ export function OrderTable() {
                       >
                         {PAYMENT_STATUS_LABELS[paymentStatus!] || paymentStatus}
                       </span>
-                      {payment.tranId && (
+                      {paymentStatus === "PAID" && payment.tranId && (
                         <span className="font-mono text-xs text-muted-foreground">
                           {cleanMethodLabel(payment.method) && (
                             <>{cleanMethodLabel(payment.method)} · </>

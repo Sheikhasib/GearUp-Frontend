@@ -12,7 +12,7 @@ import { addDays, format } from "date-fns"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { createRentalOrderAction } from "../../_actions/gear/rentalActions"
-import { isDateInUnavailableRange, toUTCMidnightISO } from "@/lib/validations/rental"
+import { isDateInUnavailableRange, toUTCMidnightISO, getMinAvailableQuantity } from "@/lib/validations/rental"
 
 interface RentNowPanelProps {
   gear: IGearItem
@@ -35,15 +35,29 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
     })
   }, [gear])
 
+  const minAvailable =
+    dateRange?.from && dateRange?.to
+      ? getMinAvailableQuantity(
+          dateRange.from,
+          dateRange.to,
+          gear.availableQuantity,
+          gear.dailyAvailability
+        )
+      : gear.availableQuantity
+
+  const maxQuantity = Math.min(gear.availableQuantity, minAvailable)
+
+  const effectiveQuantity = maxQuantity > 0 ? Math.min(quantity, maxQuantity) : 0
+
   const days =
     dateRange?.from && dateRange?.to
       ? Math.ceil((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) + 1
       : 0
 
-  const total = days * gear.priceRatePerDay * quantity
+  const total = days * gear.priceRatePerDay * effectiveQuantity
 
   const handleRent = async () => {
-    if (!dateRange?.from || !dateRange?.to) return
+    if (!dateRange?.from || !dateRange?.to || effectiveQuantity < 1) return
 
     if (!user) {
       router.push(`/login?redirectTo=/gears/${gear.id}`)
@@ -55,14 +69,14 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
       endDate: dateRange.to,
       days,
       totalPrice: total,
-      quantity,
+      quantity: effectiveQuantity,
     })
 
     const result = await createRentalOrderAction({
       gearItemId: gear.id,
       startDate: toUTCMidnightISO(dateRange.from),
       endDate: toUTCMidnightISO(addDays(dateRange.to, 1)),
-      quantity,
+      quantity: effectiveQuantity,
     })
 
     if (!result.success) {
@@ -143,22 +157,30 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            onClick={() => setQuantity(Math.max(1, effectiveQuantity - 1))}
             className="h-8 w-8 border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors"
           >
             -
           </button>
-          <span className="w-8 text-center font-heading text-lg tabular-nums">{quantity}</span>
+          <span className="w-8 text-center font-heading text-lg tabular-nums">{effectiveQuantity}</span>
           <button
             type="button"
-            onClick={() => setQuantity(Math.min(gear.availableQuantity, quantity + 1))}
-            disabled={quantity >= gear.availableQuantity}
+            onClick={() => setQuantity(Math.min(maxQuantity, effectiveQuantity + 1))}
+            disabled={effectiveQuantity >= maxQuantity || maxQuantity <= 0}
             className="h-8 w-8 border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors disabled:opacity-30"
           >
             +
           </button>
-          <span className="text-[10px] text-muted-foreground ml-2">
-            {gear.availableQuantity} available
+          <span
+            className={`text-[10px] ml-2 ${
+              dateRange?.from && dateRange?.to && minAvailable === 0
+                ? "text-destructive"
+                : "text-muted-foreground"
+            }`}
+          >
+            {dateRange?.from && dateRange?.to
+              ? `${minAvailable} available for these dates`
+              : `${gear.availableQuantity} available`}
           </span>
         </div>
       </div>
@@ -171,10 +193,10 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
             </span>
             <span>${gear.priceRatePerDay * days}</span>
           </div>
-          {quantity > 1 && (
+          {effectiveQuantity > 1 && (
             <div className="flex justify-between text-muted-foreground">
-              <span>x {quantity} units</span>
-              <span>${gear.priceRatePerDay * days * quantity}</span>
+              <span>x {effectiveQuantity} units</span>
+              <span>${gear.priceRatePerDay * days * effectiveQuantity}</span>
             </div>
           )}
           <div className="flex justify-between font-heading text-lg font-bold pt-2 border-t border-border">
@@ -187,7 +209,7 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
       <Button
         className="w-full cursor-pointer"
         size="lg"
-        disabled={!dateRange?.from || !dateRange?.to}
+        disabled={!dateRange?.from || !dateRange?.to || effectiveQuantity < 1}
         onClick={handleRent}
       >
         Rent Now
