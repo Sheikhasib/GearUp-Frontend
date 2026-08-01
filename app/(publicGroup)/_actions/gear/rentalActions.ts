@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { rentNowSchema } from "@/lib/validations/rental"
+import { rentNowSchema, areDateRangesOverlapping } from "@/lib/validations/rental"
 import type { RentNowInput } from "@/lib/validations/rental"
 
 const API_BASE = process.env.BACKEND_API_URL || "http://localhost:4000"
@@ -31,6 +31,29 @@ export async function createRentalOrderAction(data: RentNowInput): Promise<Renta
   }
 
   try {
+    const gearRes = await fetch(`${API_BASE}/api/gear/${parsed.data.gearItemId}`, {
+      cache: "no-cache",
+    })
+    if (gearRes.ok) {
+      const gearJson = await gearRes.json()
+      const gear = gearJson.data ?? gearJson
+      const unavailableRanges = gear?.unavailableRanges
+
+      if (
+        unavailableRanges?.length &&
+        areDateRangesOverlapping(
+          { startDate: parsed.data.startDate, endDate: parsed.data.endDate },
+          unavailableRanges
+        )
+      ) {
+        return {
+          success: false,
+          message:
+            "The selected dates overlap with an already-booked period. Please choose different dates.",
+        }
+      }
+    }
+
     const res = await fetch(`${API_BASE}/api/rentals`, {
       method: "POST",
       headers: {

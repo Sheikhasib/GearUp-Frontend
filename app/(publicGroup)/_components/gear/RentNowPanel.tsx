@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button"
 import { useRentSelectionStore } from "../../_store/rentSelectionStore"
 import { useAuthStore } from "@/store/authStore"
 import type { IGearItem } from "@/lib/types"
-import { format } from "date-fns"
+import { addDays, format } from "date-fns"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { createRentalOrderAction } from "../../_actions/gear/rentalActions"
+import { isDateInUnavailableRange, toUTCMidnightISO } from "@/lib/validations/rental"
 
 interface RentNowPanelProps {
   gear: IGearItem
@@ -57,15 +58,10 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
       quantity,
     })
 
-    const adjustedEnd =
-      dateRange.to.getTime() === dateRange.from.getTime()
-        ? new Date(dateRange.from.getTime() + 86400000)
-        : dateRange.to
-
     const result = await createRentalOrderAction({
       gearItemId: gear.id,
-      startDate: dateRange.from.toISOString(),
-      endDate: adjustedEnd.toISOString(),
+      startDate: toUTCMidnightISO(dateRange.from),
+      endDate: toUTCMidnightISO(addDays(dateRange.to, 1)),
       quantity,
     })
 
@@ -77,14 +73,8 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  const isDateUnavailable = (date: Date) => {
-    if (!gear.unavailableRanges?.length) return false
-    return gear.unavailableRanges.some((range) => {
-      const start = new Date(range.startDate)
-      const end = new Date(range.endDate)
-      return date >= start && date <= end
-    })
-  }
+  const isDateUnavailable = (date: Date) =>
+    isDateInUnavailableRange(date, gear.unavailableRanges ?? [])
 
   const disabledMatchers = [{ before: today }, isDateUnavailable]
 
@@ -128,6 +118,7 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
             selected={dateRange}
             onSelect={setDateRange}
             disabled={disabledMatchers}
+            excludeDisabled
             numberOfMonths={2}
             className="!m-0"
           />
@@ -138,6 +129,7 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
             selected={dateRange}
             onSelect={setDateRange}
             disabled={disabledMatchers}
+            excludeDisabled
             numberOfMonths={1}
             className="!m-0"
           />

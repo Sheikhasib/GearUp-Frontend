@@ -16,12 +16,15 @@ function getPageItems(current: number, total: number): (number | "...")[] {
     total - 1,
     total,
   ])
+
   const sorted = [...pages]
     .filter((p) => p >= 1 && p <= total)
     .sort((a, b) => a - b)
 
   const items: (number | "...")[] = []
+
   let prev = 0
+
   for (const p of sorted) {
     if (p - prev > 1) items.push("...")
     items.push(p)
@@ -38,15 +41,24 @@ interface PaginationProps {
 
 const pageButtonClass =
   "inline-flex h-9 min-w-9 cursor-pointer items-center justify-center rounded-md border border-border px-2 text-sm transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-const activePageClass = "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
 
-export function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
+const activePageClass =
+  "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+
+export function Pagination({
+  page,
+  totalPages,
+  onPageChange,
+}: PaginationProps) {
   if (totalPages <= 1) return null
 
   const pageItems = getPageItems(page, totalPages)
 
   return (
-    <nav className="flex items-center justify-center gap-2" aria-label="Pagination">
+    <nav
+      className="flex items-center justify-center gap-2"
+      aria-label="Pagination"
+    >
       <button
         type="button"
         onClick={() => onPageChange(page - 1)}
@@ -59,7 +71,10 @@ export function Pagination({ page, totalPages, onPageChange }: PaginationProps) 
 
       {pageItems.map((item, index) =>
         item === "..." ? (
-          <span key={`ellipsis-${index}`} className="px-1 text-muted-foreground">
+          <span
+            key={`ellipsis-${index}`}
+            className="px-1 text-muted-foreground"
+          >
             …
           </span>
         ) : (
