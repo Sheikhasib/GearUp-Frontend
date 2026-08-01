@@ -52,6 +52,12 @@ export async function proxy(request: NextRequest) {
         sameSite: "lax",
       })
 
+      cookieStore.set("accessTokenClient", newAccessToken, {
+        httpOnly: false,
+        maxAge: 60 * 60 * 24,
+        sameSite: "lax",
+      })
+
       accessToken = newAccessToken
 
       decodedAccessToken = jwtUtils.verifyToken(
@@ -65,6 +71,7 @@ export async function proxy(request: NextRequest) {
 
   if (!decodedAccessToken?.success) {
     cookieStore.delete("accessToken")
+    cookieStore.delete("accessTokenClient")
   }
 
   if (decodedAccessToken?.success && decodedAccessToken?.data) {

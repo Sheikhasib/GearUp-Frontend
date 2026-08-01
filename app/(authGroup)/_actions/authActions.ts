@@ -64,6 +64,13 @@ export const loginAction = async (
     secure: process.env.NODE_ENV === "production",
   })
 
+  cookieStore.set("accessTokenClient", accessToken, {
+    httpOnly: false,
+    maxAge: 60 * 60 * 24,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  })
+
   const decodedToken = jwt.decode(accessToken) as JwtPayload
 
   if (
@@ -130,6 +137,7 @@ export const registerAction = async (
 export const logoutAction = async () => {
   const cookieStore = await cookies()
   cookieStore.delete("accessToken")
+  cookieStore.delete("accessTokenClient")
   cookieStore.delete("refreshToken")
   redirect("/")
 }

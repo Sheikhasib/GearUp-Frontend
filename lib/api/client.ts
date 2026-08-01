@@ -2,6 +2,25 @@ import type { IApiResponse } from "@/lib/types"
 
 const API_BASE = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:3000"
 
+const ACCESS_TOKEN_COOKIE = "accessTokenClient"
+
+function getAccessToken(): string | undefined {
+  if (typeof document === "undefined") return undefined
+  const match = document.cookie.match(
+    new RegExp(`(?:^|;\\s*)${ACCESS_TOKEN_COOKIE}=([^;]*)`)
+  )
+  return match ? decodeURIComponent(match[1]) : undefined
+}
+
+function buildHeaders(options?: RequestInit): HeadersInit {
+  const token = getAccessToken()
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...options?.headers,
+  }
+}
+
 export class ApiError extends Error {
   constructor(
     public statusCode: number,
@@ -14,12 +33,9 @@ export class ApiError extends Error {
 
 export async function apiClient<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}/api${endpoint}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-    credentials: "include",
     ...options,
+    headers: buildHeaders(options),
+    credentials: "include",
   })
 
   const json = await res.json()
@@ -36,12 +52,9 @@ export async function apiClientFull<T>(
   options?: RequestInit
 ): Promise<IApiResponse<T>> {
   const res = await fetch(`${API_BASE}/api${endpoint}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-    credentials: "include",
     ...options,
+    headers: buildHeaders(options),
+    credentials: "include",
   })
 
   const json = await res.json()
