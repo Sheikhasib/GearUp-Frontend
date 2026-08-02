@@ -43,11 +43,14 @@ next-env.d.ts
 temp_example_back/
 temp_example_front/
 temp_gearup_backend/
+gearup_frontend/
+gearup-frontend/
 
 # Documentation
 2-GearUp-Frontend.md
 2-GearUp-Backend.md
-docs/
+docs/plans/
+docs/PROJECT_WALKTHROUGH.pdf
 
 # Vercel
 .vercel
