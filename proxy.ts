@@ -8,7 +8,15 @@ import { getPaymentStatus } from "./app/(publicGroup)/_actions/payment/getPaymen
 
 const AUTH_ROUTES = ["/login", "/register"]
 
-const PUBLIC_ROUTES = ["/", "/gears", "/about", "/contact", "/services", "/payment/success", "/payment/cancel"]
+const PUBLIC_ROUTES = [
+  "/",
+  "/gears",
+  "/about",
+  "/contact",
+  "/services",
+  "/payment/success",
+  "/payment/cancel",
+]
 
 const ROLE_DASHBOARD: Record<string, string> = {
   CUSTOMER: "/customer-dashboard",
@@ -38,6 +46,7 @@ export async function proxy(request: NextRequest) {
       ) as JwtPayload)
     : null
 
+  // If the access token is invalid or expired, but the refresh token is valid, attempt to get a new access token
   if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
     // console.log("refresh")
     const result = await getNewAccessToken()
@@ -69,15 +78,18 @@ export async function proxy(request: NextRequest) {
 
   let userRole: string | null = null
 
+  // If the access token is invalid or expired, and the refresh token is also invalid or expired, clear the access token cookies
   if (!decodedAccessToken?.success) {
     cookieStore.delete("accessToken")
     cookieStore.delete("accessTokenClient")
   }
 
+  // If the access token is valid, extract the user role from it
   if (decodedAccessToken?.success && decodedAccessToken?.data) {
     userRole = (decodedAccessToken.data as JwtPayload).role as string
   }
 
+  // If the user is authenticated and tries to access an auth route, redirect them to their respective dashboard or home page
   if (accessToken && AUTH_ROUTES.includes(pathname)) {
     const target = userRole ? ROLE_DASHBOARD[userRole] || "/" : "/"
     return NextResponse.redirect(new URL(target, request.url))
@@ -91,12 +103,14 @@ export async function proxy(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(route + "/")
   )
 
+  // If the user is not authenticated and tries to access a protected route, redirect them to the login page
   if (!accessToken && !isPublicRoute && !isAuthRoute) {
     const loginUrl = new URL("/login", request.url)
     loginUrl.searchParams.set("redirectTo", pathname)
     return NextResponse.redirect(loginUrl)
   }
 
+  // Role-based access control
   if (pathname.startsWith("/customer-dashboard") && userRole !== "CUSTOMER") {
     return NextResponse.redirect(new URL("/not-found", request.url))
   }
@@ -106,22 +120,29 @@ export async function proxy(request: NextRequest) {
   if (pathname.startsWith("/admin-dashboard") && userRole !== "ADMIN") {
     return NextResponse.redirect(new URL("/not-found", request.url))
   }
-  if (pathname.startsWith("/provider/") && userRole !== "PROVIDER") {
-    return NextResponse.redirect(new URL("/not-found", request.url))
-  }
 
-  if (accessToken && (pathname === "/payment/success" || pathname === "/payment/cancel")) {
+  // Payment status check for success and cancel routes
+  if (
+    accessToken &&
+    (pathname === "/payment/success" || pathname === "/payment/cancel")
+  ) {
     const orderId = request.nextUrl.searchParams.get("orderId")
     if (orderId) {
       const paymentStatus = await getPaymentStatus(orderId)
-      const isPaid = Boolean(paymentStatus?.success && paymentStatus.data?.isPaid)
+      const isPaid = Boolean(
+        paymentStatus?.success && paymentStatus.data?.isPaid
+      )
 
       if (pathname === "/payment/success" && !isPaid) {
-        return NextResponse.redirect(new URL("/customer-dashboard", request.url))
+        return NextResponse.redirect(
+          new URL("/customer-dashboard", request.url)
+        )
       }
 
       if (pathname === "/payment/cancel" && isPaid) {
-        return NextResponse.redirect(new URL(`/payment/success?orderId=${orderId}`, request.url))
+        return NextResponse.redirect(
+          new URL(`/payment/success?orderId=${orderId}`, request.url)
+        )
       }
     }
   }

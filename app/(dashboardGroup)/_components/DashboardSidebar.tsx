@@ -19,7 +19,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ISidebarItem, IUser } from "@/lib/types"
 import { Bicycle, SignOut } from "@phosphor-icons/react"
@@ -122,9 +122,16 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         {user?.success ? (
           <div className="flex items-center gap-2 px-2 py-1.5">
             <Avatar className="size-8 shrink-0">
-              <AvatarFallback className="text-xs text-primary">
-                {getInitials(user.data.name || "N/A")}
-              </AvatarFallback>
+              {user.data.avatarUrl ? (
+                <AvatarImage
+                  src={user.data.avatarUrl}
+                  alt={user.data.name || "Avatar"}
+                />
+              ) : (
+                <AvatarFallback className="text-xs text-primary">
+                  {getInitials(user.data.name || "N/A")}
+                </AvatarFallback>
+              )}
             </Avatar>
             <div className="flex min-w-0 flex-1 flex-col leading-tight">
               <span className="truncate text-sm font-medium">

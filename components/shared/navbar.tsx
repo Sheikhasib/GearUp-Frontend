@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -149,9 +149,16 @@ export function Navbar({ user }: NavbarProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
                   <Avatar className="size-8">
-                    <AvatarFallback className="text-xs text-primary">
-                      {getInitials(user.data.name || "N/A")}
-                    </AvatarFallback>
+                    {user.data.avatarUrl ? (
+                      <AvatarImage
+                        src={user.data.avatarUrl}
+                        alt={user.data.name || "Avatar"}
+                      />
+                    ) : (
+                      <AvatarFallback className="text-xs text-primary">
+                        {getInitials(user.data.name || "N/A")}
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                   <span className="sr-only">Open user menu</span>
                 </Button>
