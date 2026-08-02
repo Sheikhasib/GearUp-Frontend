@@ -1,11 +1,9 @@
 "use server"
 
-import { cookies } from "next/headers"
+import { getAccessToken } from "@/service/refreshToken"
 
 export const getPaymentStatus = async (orderId: string) => {
-  const cookieStore = await cookies()
-
-  const accessToken = cookieStore.get("accessToken")?.value || null
+  const accessToken = await getAccessToken()
 
   if (!accessToken) {
     return {

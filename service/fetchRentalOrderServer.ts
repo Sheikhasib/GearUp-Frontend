@@ -1,13 +1,12 @@
 "use server"
 
-import { cookies } from "next/headers"
+import { getAccessToken } from "@/service/refreshToken"
 import type { IRentalOrder } from "@/lib/types"
 
 const API_BASE = process.env.BACKEND_API_URL || "http://localhost:4000"
 
 export async function fetchRentalOrderServer(id: string): Promise<IRentalOrder | null> {
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get("accessToken")?.value
+  const accessToken = await getAccessToken()
   if (!accessToken) return null
 
   try {

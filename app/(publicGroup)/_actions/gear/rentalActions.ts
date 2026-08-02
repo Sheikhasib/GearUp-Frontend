@@ -1,7 +1,7 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { getAccessToken } from "@/service/refreshToken"
 import { rentNowSchema, areDateRangesOverlapping } from "@/lib/validations/rental"
 import type { RentNowInput } from "@/lib/validations/rental"
 
@@ -21,8 +21,7 @@ export async function createRentalOrderAction(data: RentNowInput): Promise<Renta
     }
   }
 
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get("accessToken")?.value
+  const accessToken = await getAccessToken()
   if (!accessToken) {
     return {
       success: false,

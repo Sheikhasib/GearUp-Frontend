@@ -78,8 +78,11 @@ export async function proxy(request: NextRequest) {
 
   let userRole: string | null = null
 
-  // If the access token is invalid or expired, and the refresh token is also invalid or expired, clear the access token cookies
-  if (!decodedAccessToken?.success) {
+  // Only clear the access cookies when the refresh token is ALSO invalid/expired.
+  // Otherwise a transient refresh failure would silently log the user out even
+  // though a still-valid refresh token could restore their session on the next
+  // request.
+  if (!decodedAccessToken?.success && !decodedRefreshToken?.success) {
     cookieStore.delete("accessToken")
     cookieStore.delete("accessTokenClient")
   }

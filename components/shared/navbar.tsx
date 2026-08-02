@@ -57,8 +57,8 @@ const navItems = [
 
 const userMenuItems = [
   { label: "Profile", href: "/profile", icon: User },
-  { label: "Dashboard", action: "dashboard", icon: Gauge },
   { label: "Settings", href: "/settings", icon: GearSix },
+  { label: "Dashboard", action: "dashboard", icon: Gauge },
 ]
 
 export function Navbar({ user }: NavbarProps) {

@@ -9,8 +9,6 @@ export const getNewAccessToken = async () => {
   const refreshToken = cookieStore.get("refreshToken")?.value || null
 
   if (!refreshToken) {
-    // throw new Error("User Not Logged In!");
-
     return {
       success: false,
       message: "Refresh token not found!",
@@ -33,25 +31,36 @@ export const getNewAccessToken = async () => {
   return result
 }
 
-// If we lose our access token while doing data fetch, then we can get our access token back through the refresh token and complete the data fetch.
-export const isAccessTokenExist = async () => {
+// Returns a valid access token for the current request, refreshing it from the
+// backend when one has expired and a valid refresh token is available. Returns
+// null when the user is not - or can no longer be - authenticated.
+//
+// IMPORTANT: this function never writes cookies. Refreshed tokens obtained here
+// are for the current request only; Next.js forbids modifying cookies outside
+// Server Actions / Route Handlers (e.g. during a Server Component render), and
+// the `proxy` already persists the refreshed token to the browser via its
+// response cookies.
+export const getAccessToken = async (): Promise<string | null> => {
   const cookieStore = await cookies()
-  let accessToken = cookieStore.get("accessToken")?.value || null
+
+  const accessToken = cookieStore.get("accessToken")?.value || null
   const refreshToken = cookieStore.get("refreshToken")?.value || null
 
   if (!accessToken && !refreshToken) {
-    throw new Error("User Not Logged In!")
-
-    // return {
-    //     success: false,
-    //     message: "User not logged in!"
-    // }
+    return null
   }
 
   const decodedAccessToken = accessToken
     ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)
     : null
 
+  // The access token is still valid, return it as-is.
+  if (decodedAccessToken?.success) {
+    return accessToken
+  }
+
+  // The access token has expired/invalid but the refresh token is valid - get a
+  // new access token from the backend for this request.
   const decodedRefreshToken = refreshToken
     ? jwtUtils.verifyToken(
         refreshToken,
@@ -59,22 +68,13 @@ export const isAccessTokenExist = async () => {
       )
     : null
 
-  if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
-    //access token has expired but refresh token is valid, get new access token from backend
+  if (decodedRefreshToken?.success) {
     const result = await getNewAccessToken()
 
-    if (result.success) {
-      const newAccessToken = result.data.accessToken
-
-      cookieStore.set("accessToken", newAccessToken, {
-        httpOnly: true,
-        maxAge: 60 * 60 * 24,
-        sameSite: "lax",
-      })
-
-      accessToken = newAccessToken
+    if (result.success && result.data?.accessToken) {
+      return result.data.accessToken
     }
   }
 
-  return accessToken
+  return null
 }

@@ -1,6 +1,6 @@
 "use server"
 
-import { cookies } from "next/headers"
+import { getAccessToken } from "@/service/refreshToken"
 import { reviewSchema } from "@/lib/validations/review"
 import type { ReviewInput } from "@/lib/validations/review"
 
@@ -20,8 +20,7 @@ export async function createReviewAction(data: ReviewInput): Promise<ReviewActio
     }
   }
 
-  const cookieStore = await cookies()
-  const accessToken = cookieStore.get("accessToken")?.value
+  const accessToken = await getAccessToken()
   if (!accessToken) {
     return {
       success: false,

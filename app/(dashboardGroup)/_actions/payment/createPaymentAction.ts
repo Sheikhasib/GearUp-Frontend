@@ -1,7 +1,7 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { getAccessToken } from "@/service/refreshToken"
 
 export async function createPaymentAction(
   rentalOrderId: string,
@@ -10,8 +10,7 @@ export async function createPaymentAction(
   let paymentUrl: string | null = null
 
   try {
-    const cookieStore = await cookies()
-    const accessToken = cookieStore.get("accessToken")?.value
+    const accessToken = await getAccessToken()
 
     if (!accessToken) {
       throw new Error("Not authenticated")
