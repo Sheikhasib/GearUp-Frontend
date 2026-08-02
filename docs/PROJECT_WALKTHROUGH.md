@@ -75,7 +75,11 @@ fetched via `service/getMe.ts` (`GET /api/auth/me`).
 | `/provider-dashboard/gear/new` `/gear/[id]/edit` | Gear forms | `app/(dashboardGroup)/provider-dashboard/gear/**` |
 | `/admin-dashboard` | Stats, users, gear, orders, categories | `app/(dashboardGroup)/admin-dashboard/**` |
 | `/payment/success` `/payment/cancel` | SSLCommerz return pages | `app/(publicGroup)/payment/**` |
-| `/profile` `/settings` | Account | `app/(publicGroup)/profile`, `/settings` |
+| `/profile` | Account (read-only view: avatar, name, email, phone, role, member since) | `app/(publicGroup)/profile` |
+
+> `/settings` was removed — it redirects to `/profile`. The account page is a
+> read-only info view; editing lives on the backend (`PATCH /api/auth/profile`),
+> so no frontend settings form is shipped.
 
 Middleware: `proxy.ts`. Root loading/error/not-found: `app/loading.tsx`,
 `app/error.tsx`, `app/not-found.tsx`.

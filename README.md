@@ -68,7 +68,8 @@ GearUp-Frontend
 │   │   ├── _components/              # Login / register forms
 │   │   └── layout.tsx
 │   ├── (publicGroup)/                # Public pages: home, gears, gear detail,
-│   │   │                             # payment callbacks, about, contact...
+│   │   │                             # payment callbacks, about, contact,
+│   │   │                             # profile (read-only account view)
 │   │   ├── _actions/                 # Rental + payment status server actions
 │   │   ├── _components/gear/         # GearCard, filters, grid, gallery, rent panel
 │   │   ├── _hooks/                   # useGear
