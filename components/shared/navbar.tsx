@@ -21,7 +21,6 @@ import {
   User,
   UserPlus,
   Gauge,
-  GearSix,
   Sun,
   Moon,
 } from "@phosphor-icons/react"
@@ -57,7 +56,6 @@ const navItems = [
 
 const userMenuItems = [
   { label: "Profile", href: "/profile", icon: User },
-  { label: "Settings", href: "/settings", icon: GearSix },
   { label: "Dashboard", action: "dashboard", icon: Gauge },
 ]
 

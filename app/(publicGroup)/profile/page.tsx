@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { CardField } from "@/components/shared/card-field"
-import { SignIn, Gauge, GearSix } from "@phosphor-icons/react/ssr"
+import { SignIn, Gauge } from "@phosphor-icons/react/ssr"
 
 const ROLE_LABELS: Record<string, string> = {
   CUSTOMER: "Customer",
@@ -121,12 +121,6 @@ const ProfilePage = async () => {
                 <Link href={ROLE_LINKS[user.role] || "/"}>
                   <Gauge className="mr-1" />
                   Dashboard
-                </Link>
-              </Button>
-              <Button size="sm" variant="outline" asChild>
-                <Link href="/settings">
-                  <GearSix className="mr-1" />
-                  Settings
                 </Link>
               </Button>
             </div>
