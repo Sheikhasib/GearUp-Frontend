@@ -158,7 +158,7 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
           <button
             type="button"
             onClick={() => setQuantity(Math.max(1, effectiveQuantity - 1))}
-            className="h-8 w-8 border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors"
+            className="h-8 w-8 border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             -
           </button>
@@ -167,7 +167,7 @@ export function RentNowPanel({ gear }: RentNowPanelProps) {
             type="button"
             onClick={() => setQuantity(Math.min(maxQuantity, effectiveQuantity + 1))}
             disabled={effectiveQuantity >= maxQuantity || maxQuantity <= 0}
-            className="h-8 w-8 border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors disabled:opacity-30"
+            className="h-8 w-8 border border-border flex items-center justify-center text-sm hover:bg-muted transition-colors disabled:opacity-30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             +
           </button>

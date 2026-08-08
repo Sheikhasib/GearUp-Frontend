@@ -43,7 +43,7 @@ export function GearImageGallery({ images }: { images: string[] }) {
             <button
               key={i}
               onClick={() => setSelected(i)}
-              className={`relative shrink-0 w-16 h-16 overflow-hidden ring-1 transition-all duration-200 ${
+              className={`relative shrink-0 w-16 h-16 overflow-hidden ring-1 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 i === selected
                   ? "ring-primary ring-2 opacity-100"
                   : "ring-foreground/10 opacity-60 hover:opacity-100"

@@ -148,12 +148,13 @@ export function OrderHistoryTable() {
                 <td className="px-5 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     {order.status === "CONFIRMED" && (
-                      <Link
-                        href={`/customer-dashboard/orders/${order.id}/pay`}
-                        className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-                      >
-                        Pay Now
-                      </Link>
+                      <Button size="sm" asChild>
+                        <Link
+                          href={`/customer-dashboard/orders/${order.id}/pay`}
+                        >
+                          Pay Now
+                        </Link>
+                      </Button>
                     )}
                     {order.status === "PLACED" && (
                       <Button
@@ -168,18 +169,17 @@ export function OrderHistoryTable() {
                     {order.status === "RETURNED" &&
                       !order.review &&
                       !reviewedOrderIds.has(order.id) && (
-                        <button
-                          type="button"
+                        <Button
+                          size="sm"
                           onClick={() =>
                             setReviewTarget({
                               id: order.id,
                               name: order.gearItem?.name ?? "Gear",
                             })
                           }
-                          className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
                         >
                           Leave Review
-                        </button>
+                        </Button>
                       )}
                   </div>
                 </td>
@@ -258,18 +258,17 @@ export function OrderHistoryTable() {
               {order.status === "RETURNED" &&
                 !order.review &&
                 !reviewedOrderIds.has(order.id) && (
-                  <button
-                    type="button"
+                  <Button
+                    size="sm"
                     onClick={() =>
                       setReviewTarget({
                         id: order.id,
                         name: order.gearItem?.name ?? "Gear",
                       })
                     }
-                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 cursor-pointer"
                   >
                     Leave Review
-                  </button>
+                  </Button>
                 )}
             </div>
           </div>

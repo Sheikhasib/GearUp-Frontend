@@ -26,7 +26,7 @@ export function GearImageUpload({ images, onImagesChange }: GearImageUploadProps
             <button
               type="button"
               onClick={() => handleRemove(index)}
-              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:opacity-100"
             >
               <X size={14} />
             </button>
@@ -44,7 +44,7 @@ export function GearImageUpload({ images, onImagesChange }: GearImageUploadProps
             <button
               type="button"
               onClick={() => open()}
-              className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed text-muted-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Image size={24} />
               <span className="text-xs">Add Image</span>

@@ -111,7 +111,7 @@ export function CategoryManager() {
             {...register("name")}
           />
           {errors.name && (
-            <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+            <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
           )}
         </div>
         <Button type="submit" disabled={isCreating} className="cursor-pointer">

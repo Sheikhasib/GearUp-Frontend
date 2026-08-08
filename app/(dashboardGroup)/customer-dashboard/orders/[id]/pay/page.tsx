@@ -3,6 +3,7 @@ import Link from "next/link"
 import { createPaymentAction } from "../../../../_actions/payment/createPaymentAction"
 import { fetchRentalOrderServer } from "@/service/fetchRentalOrderServer"
 import { formatRentalDay, formatRentalEndDate } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 const PayPage = async ({
   params,
@@ -99,12 +100,9 @@ const PayPage = async ({
             <form
               action={createPaymentAction.bind(null, order.id)}
             >
-              <button
-                type="submit"
-                className="w-full rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
-              >
+              <Button type="submit" className="w-full">
                 Pay with SSLCommerz
-              </button>
+              </Button>
             </form>
           ) : (
             <div className="text-center py-4">

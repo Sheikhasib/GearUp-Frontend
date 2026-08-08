@@ -113,7 +113,7 @@ export function UsersTable() {
               key={r}
               type="button"
               onClick={() => setRole(r)}
-              className={`cursor-pointer rounded-md border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase transition-colors ${
+              className={`cursor-pointer rounded-md border px-3 py-1.5 text-xs font-semibold tracking-widest uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                 role === r
                   ? "border-border bg-foreground text-background"
                   : "border-border text-muted-foreground hover:bg-muted"

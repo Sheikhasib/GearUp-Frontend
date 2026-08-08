@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ArrowRight, House, MagnifyingGlass } from "@phosphor-icons/react"
+import { Button } from "@/components/ui/button"
 
 export default function NotFound() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -56,22 +57,18 @@ export default function NotFound() {
 
           {/* CTA Buttons */}
           <div className="mb-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/"
-              className="group relative inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 font-semibold text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
-            >
-              <House className="h-5 w-5" />
-              Back to Home
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Link>
+            <Button asChild>
+              <Link href="/">
+                <House className="h-5 w-5" />
+                Back to Home
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
 
-            <button
-              onClick={() => window.history.back()}
-              className="group relative inline-flex items-center gap-2 rounded-lg border-2 border-primary px-8 py-3 font-semibold text-primary transition-all duration-300 hover:bg-primary/5"
-            >
+            <Button variant="outline" onClick={() => window.history.back()}>
               <MagnifyingGlass className="h-5 w-5" />
               Go Back
-            </button>
+            </Button>
           </div>
 
           {/* Decorative suggestion */}

@@ -116,7 +116,7 @@ export function OrderTable() {
           type="button"
           onClick={() => handleFilterChange(tab.key)}
           className={cn(
-            "inline-flex h-8 cursor-pointer items-center rounded-md border px-3 text-xs font-semibold tracking-widest uppercase transition-colors",
+            "inline-flex h-8 cursor-pointer items-center rounded-md border px-3 text-xs font-semibold tracking-widest uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             currentFilter === tab.key
               ? "border-primary bg-primary text-primary-foreground"
               : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"

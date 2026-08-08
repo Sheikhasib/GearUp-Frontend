@@ -29,7 +29,7 @@ export function ReviewItem({ name, rating, comment, createdAt }: ReviewItemProps
                 size={14}
                 weight={star <= rating ? "fill" : "regular"}
                 className={
-                  star <= rating ? "text-amber-400" : "text-muted-foreground/30"
+                  star <= rating ? "text-accent-solid" : "text-muted-foreground/30"
                 }
               />
             ))}

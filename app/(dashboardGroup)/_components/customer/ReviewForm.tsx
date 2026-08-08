@@ -69,13 +69,13 @@ export function ReviewForm({ rentalOrderId, gearItemName, onSuccess }: ReviewFor
               onClick={() => setValue("rating", star, { shouldValidate: true })}
               onMouseEnter={() => setHovered(star)}
               onMouseLeave={() => setHovered(0)}
-              className="p-1 text-2xl transition-colors cursor-pointer"
+              className="p-1 text-2xl transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Star
                 weight={star <= (hovered || rating) ? "fill" : "regular"}
                 className={
                   star <= (hovered || rating)
-                    ? "text-amber-400"
+                    ? "text-accent-solid"
                     : "text-muted-foreground/30"
                 }
               />
@@ -83,7 +83,7 @@ export function ReviewForm({ rentalOrderId, gearItemName, onSuccess }: ReviewFor
           ))}
         </div>
         {errors.rating && (
-          <p className="text-xs text-red-500">{errors.rating.message}</p>
+          <p className="text-xs text-destructive">{errors.rating.message}</p>
         )}
       </div>
 

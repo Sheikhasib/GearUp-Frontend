@@ -92,7 +92,7 @@ export function GearForm({ mode, gearId, defaultValues }: GearFormProps) {
           placeholder="e.g. Mountain Bike Pro"
         />
         {errors.name && (
-          <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+          <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
         )}
       </div>
 
@@ -108,7 +108,7 @@ export function GearForm({ mode, gearId, defaultValues }: GearFormProps) {
           placeholder="Describe the gear, condition, what's included..."
         />
         {errors.description && (
-          <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>
+          <p className="mt-1 text-xs text-destructive">{errors.description.message}</p>
         )}
       </div>
 
@@ -138,7 +138,7 @@ export function GearForm({ mode, gearId, defaultValues }: GearFormProps) {
             ))}
           </select>
           {errors.categoryId && (
-            <p className="mt-1 text-xs text-red-500">{errors.categoryId.message}</p>
+            <p className="mt-1 text-xs text-destructive">{errors.categoryId.message}</p>
           )}
         </div>
       </div>
@@ -157,7 +157,7 @@ export function GearForm({ mode, gearId, defaultValues }: GearFormProps) {
             className={inputClass}
           />
           {errors.priceRatePerDay && (
-            <p className="mt-1 text-xs text-red-500">
+            <p className="mt-1 text-xs text-destructive">
               {errors.priceRatePerDay.message}
             </p>
           )}
@@ -176,7 +176,7 @@ export function GearForm({ mode, gearId, defaultValues }: GearFormProps) {
             className={inputClass}
           />
           {errors.quantity && (
-            <p className="mt-1 text-xs text-red-500">{errors.quantity.message}</p>
+            <p className="mt-1 text-xs text-destructive">{errors.quantity.message}</p>
           )}
         </div>
       </div>
@@ -190,7 +190,7 @@ export function GearForm({ mode, gearId, defaultValues }: GearFormProps) {
           }
         />
         {errors.images && (
-          <p className="mt-1 text-xs text-red-500">{errors.images.message}</p>
+          <p className="mt-1 text-xs text-destructive">{errors.images.message}</p>
         )}
       </div>
 
