@@ -46,39 +46,84 @@ const RegisterForm = () => {
           </div>
         )}
 
-        <Input
-          name="name"
-          type="text"
-          placeholder="Enter Your Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        ></Input>
-        <Input
-          name="email"
-          type="email"
-          placeholder="Enter Your Email"
-          required
-        ></Input>
-        <Input
-          name="password"
-          type="password"
-          placeholder="Enter Your Password"
-          required
-        ></Input>
-        <Input
-          name="confirmPassword"
-          type="password"
-          placeholder="Confirm Your Password"
-          required
-        ></Input>
-        <Input
-          name="profilePhoto"
-          type="text"
-          placeholder="Profile Photo URL (optional)"
-          value={photoUrl}
-          onChange={(e) => setPhotoUrl(e.target.value)}
-        ></Input>
+        <div className="space-y-1.5">
+          <label
+            htmlFor="register-name"
+            className="block text-xs font-semibold tracking-widest uppercase text-muted-foreground"
+          >
+            Name
+          </label>
+          <Input
+            id="register-name"
+            name="name"
+            type="text"
+            placeholder="Enter Your Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label
+            htmlFor="register-email"
+            className="block text-xs font-semibold tracking-widest uppercase text-muted-foreground"
+          >
+            Email
+          </label>
+          <Input
+            id="register-email"
+            name="email"
+            type="email"
+            placeholder="Enter Your Email"
+            required
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label
+            htmlFor="register-password"
+            className="block text-xs font-semibold tracking-widest uppercase text-muted-foreground"
+          >
+            Password
+          </label>
+          <Input
+            id="register-password"
+            name="password"
+            type="password"
+            placeholder="Enter Your Password"
+            required
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label
+            htmlFor="register-confirm-password"
+            className="block text-xs font-semibold tracking-widest uppercase text-muted-foreground"
+          >
+            Confirm Password
+          </label>
+          <Input
+            id="register-confirm-password"
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm Your Password"
+            required
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label
+            htmlFor="register-photo"
+            className="block text-xs font-semibold tracking-widest uppercase text-muted-foreground"
+          >
+            Profile Photo URL (optional)
+          </label>
+          <Input
+            id="register-photo"
+            name="profilePhoto"
+            type="text"
+            placeholder="Profile Photo URL (optional)"
+            value={photoUrl}
+            onChange={(e) => setPhotoUrl(e.target.value)}
+          />
+        </div>
 
         <Button className="cursor-pointer" type="submit">
           {pending ? "Submitting..." : <><UserPlus className="mr-1" /> Register</>}
