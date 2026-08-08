@@ -92,7 +92,7 @@ export default async function HomePage() {
     <>
       <HeroSection items={enriched.slice(0, 3)} />
 
-      <CategoryGrid categories={categoryCounts} />
+      <CategoryGrid categories={categoryCounts} limit={6} showViewAll />
 
       {enriched.length > 0 && (
         <section className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-20">

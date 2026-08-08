@@ -7,8 +7,21 @@ interface CategoryCount {
   count: number
 }
 
-export function CategoryGrid({ categories }: { categories: CategoryCount[] }) {
+interface CategoryGridProps {
+  categories: CategoryCount[]
+  limit?: number
+  showViewAll?: boolean
+}
+
+export function CategoryGrid({
+  categories,
+  limit,
+  showViewAll,
+}: CategoryGridProps) {
   if (categories.length === 0) return null
+
+  const visible = typeof limit === "number" ? categories.slice(0, limit) : categories
+  const hasMore = typeof limit === "number" && categories.length > limit
 
   return (
     <section id="categories" className="scroll-mt-20 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
@@ -21,9 +34,17 @@ export function CategoryGrid({ categories }: { categories: CategoryCount[] }) {
             Find the right gear for your ride
           </p>
         </div>
+        {(showViewAll || hasMore) && (
+          <Link
+            href="/categories"
+            className="inline-flex items-center gap-1 text-xs font-semibold tracking-widest uppercase text-primary transition-colors hover:text-primary/80"
+          >
+            View All Categories <ArrowRight size={14} />
+          </Link>
+        )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {categories.map(({ category, count }) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {visible.map(({ category, count }) => (
           <Link
             key={category.id}
             href={`/gears?categoryId=${category.id}`}
