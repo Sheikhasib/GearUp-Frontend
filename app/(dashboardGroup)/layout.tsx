@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/shared/navbar"
+import { Footer } from "@/components/shared/footer"
 import {
   SidebarProvider,
   SidebarTrigger,
@@ -25,6 +26,7 @@ const Dashboardlayout = async ({ children }: { children: ReactNode }) => {
           {children}
         </main>
       </SidebarProvider>
+      <Footer />
     </div>
   )
 }

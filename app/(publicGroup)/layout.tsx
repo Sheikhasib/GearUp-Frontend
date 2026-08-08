@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/shared/navbar"
+import { Footer } from "@/components/shared/footer"
 import { getMe } from "@/service/getMe"
 import React from "react"
 
@@ -10,9 +11,10 @@ const PublicGroupLayout = async ({
   const user = await getMe()
 
   return (
-    <div>
+    <div className="flex min-h-screen flex-col">
       <Navbar user={user} />
-      {children}
+      <div className="flex-1">{children}</div>
+      <Footer />
     </div>
   )
 }
