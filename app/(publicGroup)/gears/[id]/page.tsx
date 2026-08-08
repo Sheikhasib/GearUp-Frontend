@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowRight } from "@phosphor-icons/react/ssr"
-import { BackButton } from "./BackButton"
+import { GoBackButton } from "@/components/shared/go-back-button"
 import { GearImageGallery } from "../../_components/gear/GearImageGallery"
 import { RentNowPanel } from "../../_components/gear/RentNowPanel"
 import { ReviewItem } from "../../_components/gear/ReviewItem"
@@ -38,7 +38,7 @@ export default async function GearDetailPage({
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
       <div className="sticky top-0 z-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 bg-background/80 backdrop-blur-lg mb-6">
-        <BackButton />
+        <GoBackButton />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { createPaymentAction } from "../../../../_actions/payment/createPaymentAction"
+import { GoBackButton } from "@/components/shared/go-back-button"
 import { fetchRentalOrderServer } from "@/service/fetchRentalOrderServer"
 import { formatRentalDay, formatRentalEndDate } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -41,12 +42,8 @@ const PayPage = async ({
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
-      <Link
-        href="/customer-dashboard"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors mb-8"
-      >
-        &larr; Back to Dashboard
-      </Link>
+      <GoBackButton label="Back to Dashboard" />
+      <div className="mb-8" />
 
       {error && (
         <div className="mb-6 rounded-md bg-red-50 p-4 text-sm text-red-700 ring-1 ring-red-200 dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/30">

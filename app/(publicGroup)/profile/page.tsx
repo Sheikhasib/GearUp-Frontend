@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { CardField } from "@/components/shared/card-field"
+import { GoBackButton } from "@/components/shared/go-back-button"
 import { SignIn, Gauge } from "@phosphor-icons/react/ssr"
 
 const ROLE_LABELS: Record<string, string> = {
@@ -61,7 +62,9 @@ const ProfilePage = async () => {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
-      <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
+      <GoBackButton label="Back" />
+
+      <h1 className="mt-4 text-3xl font-bold tracking-tight">My Profile</h1>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_2fr]">
         <Card>
