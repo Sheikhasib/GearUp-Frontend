@@ -14,6 +14,8 @@ async function getGears(
   if (params.maxPrice) searchParams.set("maxPrice", params.maxPrice)
   if (params.availableFrom) searchParams.set("availableFrom", params.availableFrom)
   if (params.availableTo) searchParams.set("availableTo", params.availableTo)
+  if (params.sortBy) searchParams.set("sortBy", params.sortBy)
+  if (params.sortOrder) searchParams.set("sortOrder", params.sortOrder)
   const page = Math.max(1, Number(params.page) || 1)
   searchParams.set("page", String(page))
   searchParams.set("limit", "12")
@@ -26,6 +28,17 @@ async function getGears(
     return { items: json.data ?? [], totalPages: json.meta?.totalPages }
   } catch {
     return { items: [] }
+  }
+}
+
+async function getBrands(): Promise<string[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/gear?limit=100`, { cache: "no-cache" })
+    const json = await res.json()
+    const items: IGearItem[] = json.data ?? []
+    return Array.from(new Set(items.map((g) => g.brand).filter((b): b is string => !!b)))
+  } catch {
+    return []
   }
 }
 
@@ -43,9 +56,11 @@ export default async function GearsPage({
   if (typeof sp.maxPrice === "string") initialParams.maxPrice = sp.maxPrice
   if (typeof sp.availableFrom === "string") initialParams.availableFrom = sp.availableFrom
   if (typeof sp.availableTo === "string") initialParams.availableTo = sp.availableTo
+  if (typeof sp.sortBy === "string") initialParams.sortBy = sp.sortBy
+  if (typeof sp.sortOrder === "string") initialParams.sortOrder = sp.sortOrder
   if (typeof sp.page === "string") initialParams.page = sp.page
 
-  const initial = await getGears(initialParams)
+  const [initial, brands] = await Promise.all([getGears(initialParams), getBrands()])
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
@@ -59,6 +74,7 @@ export default async function GearsPage({
         initialData={initial.items}
         initialTotalPages={initial.totalPages}
         initialParams={initialParams}
+        initialBrands={brands}
       />
     </div>
   )

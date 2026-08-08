@@ -12,12 +12,14 @@ interface GearsContentProps {
   initialData: IGearItem[]
   initialTotalPages?: number
   initialParams: Record<string, string>
+  initialBrands?: string[]
 }
 
 export function GearsContent({
   initialData,
   initialTotalPages,
   initialParams,
+  initialBrands = [],
 }: GearsContentProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -29,6 +31,8 @@ export function GearsContent({
   const currentMaxPrice = searchParams.get("maxPrice") || initialParams.maxPrice || ""
   const currentAvailFrom = searchParams.get("availableFrom") || initialParams.availableFrom || ""
   const currentAvailTo = searchParams.get("availableTo") || initialParams.availableTo || ""
+  const currentSortBy = searchParams.get("sortBy") || initialParams.sortBy || "createdAt"
+  const currentSortOrder = (searchParams.get("sortOrder") || initialParams.sortOrder || "desc") as "asc" | "desc"
   const currentPage = Math.max(
     1,
     Number(searchParams.get("page") || initialParams.page) || 1
@@ -44,14 +48,14 @@ export function GearsContent({
     availableTo: currentAvailTo || undefined,
     page: currentPage,
     limit: 12,
+    sortBy: currentSortBy,
+    sortOrder: currentSortOrder,
   })
 
   const gears: IGearItem[] = data?.items ?? initialData
   const totalPages = Math.max(1, data?.meta?.totalPages ?? initialTotalPages ?? 1)
 
-  const brands = Array.from(
-    new Set(gears.map((gear) => gear.brand).filter((brand): brand is string => !!brand))
-  )
+  const brands = initialBrands
 
   const handleParamsChange = useCallback(
     (patch: Record<string, string>) => {
@@ -95,6 +99,8 @@ export function GearsContent({
           maxPrice: currentMaxPrice,
           availableFrom: currentAvailFrom,
           availableTo: currentAvailTo,
+          sortBy: currentSortBy,
+          sortOrder: currentSortOrder,
         }}
         brands={brands}
         onParamsChange={handleParamsChange}

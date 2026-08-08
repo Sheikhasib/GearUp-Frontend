@@ -14,6 +14,8 @@ interface GearFiltersProps {
     maxPrice?: string
     availableFrom?: string
     availableTo?: string
+    sortBy?: string
+    sortOrder?: string
   }
   brands?: string[]
   onParamsChange: (params: Record<string, string>) => void
@@ -59,8 +61,32 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
     [onParamsChange]
   )
 
+  const hasActiveFilters = Boolean(
+    search || minPrice || maxPrice ||
+    params.categoryId || params.brand ||
+    params.availableFrom || params.availableTo
+  )
+
+  const handleClearAll = useCallback(() => {
+    setSearch("")
+    setMinPrice("")
+    setMaxPrice("")
+    onParamsChange({
+      search: "",
+      categoryId: "",
+      brand: "",
+      minPrice: "",
+      maxPrice: "",
+      availableFrom: "",
+      availableTo: "",
+    })
+  }, [onParamsChange])
+
+  const today = new Date().toISOString().split("T")[0]
+
   return (
-    <div className="flex flex-wrap items-end gap-4">
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-end gap-4">
       <div className="flex-1 min-w-[200px]">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Search
@@ -116,6 +142,30 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         </select>
       </div>
 
+      <div className="w-40">
+        <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
+          Sort By
+        </label>
+        <select
+          value={`${params.sortBy || "createdAt"}:${params.sortOrder || "desc"}`}
+          onChange={(e) => {
+            const [sortBy, sortOrder] = e.target.value.split(":")
+            updateParam("sortBy", sortBy)
+            updateParam("sortOrder", sortOrder)
+          }}
+          className={cn(
+            "h-10 w-full bg-transparent border-0 border-b border-b-input px-0 py-1 text-sm",
+            "focus-visible:border-b-ring outline-none transition-colors",
+            "cursor-pointer"
+          )}
+        >
+          <option value="createdAt:desc">Newest</option>
+          <option value="priceRatePerDay:asc">Price: Low to High</option>
+          <option value="priceRatePerDay:desc">Price: High to Low</option>
+          <option value="name:asc">Name: A to Z</option>
+        </select>
+      </div>
+
       <div className="w-28">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Min Price
@@ -148,6 +198,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         </label>
         <Input
           type="date"
+          min={today}
           value={params.availableFrom || ""}
           onChange={(e) => updateParam("availableFrom", e.target.value)}
         />
@@ -159,10 +210,24 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         </label>
         <Input
           type="date"
+          min={today}
           value={params.availableTo || ""}
           onChange={(e) => updateParam("availableTo", e.target.value)}
         />
       </div>
+      </div>
+
+      {hasActiveFilters && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={handleClearAll}
+            className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground cursor-pointer"
+          >
+            Clear all filters
+          </button>
+        </div>
+      )}
     </div>
   )
 }
