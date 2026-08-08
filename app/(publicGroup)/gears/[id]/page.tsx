@@ -5,6 +5,7 @@ import { GoBackButton } from "@/components/shared/go-back-button"
 import { GearImageGallery } from "../../_components/gear/GearImageGallery"
 import { RentNowPanel } from "../../_components/gear/RentNowPanel"
 import { ReviewItem } from "../../_components/gear/ReviewItem"
+import { Specifications } from "./_components/Specifications"
 import type { IGearItem, IReview } from "@/lib/types"
 
 const API_URL = process.env.BACKEND_API_URL || "http://localhost:4000"
@@ -94,6 +95,8 @@ export default async function GearDetailPage({
               {gear.description}
             </p>
           </div>
+
+          <Specifications gear={gear} />
 
           {reviews && reviews.length > 0 && (
             <div className="space-y-4 border-t border-border pt-8">
