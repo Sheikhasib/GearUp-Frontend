@@ -3,10 +3,16 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Bicycle } from "@phosphor-icons/react"
+import { Bicycle, Star } from "@phosphor-icons/react"
 import type { IGearItem } from "@/lib/types"
 
-export function GearCard({ gear }: { gear: IGearItem }) {
+interface GearCardProps {
+  gear: IGearItem
+  rating?: number
+  reviewCount?: number
+}
+
+export function GearCard({ gear, rating, reviewCount }: GearCardProps) {
   const [imgError, setImgError] = useState(false)
   const imageUrl = gear.images?.[0]
 
@@ -62,6 +68,18 @@ export function GearCard({ gear }: { gear: IGearItem }) {
         <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
           {gear.description}
         </p>
+
+        {typeof rating === "number" && reviewCount !== undefined && (
+          <div className="flex items-center gap-1.5">
+            <Star size={14} weight="fill" className="text-accent-solid" />
+            <span className="text-xs font-semibold tabular-nums">
+              {rating.toFixed(1)}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
+            </span>
+          </div>
+        )}
 
         <div className="mt-auto pt-3 flex items-center justify-between">
           {gear.provider && (
