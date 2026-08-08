@@ -5,6 +5,7 @@ import { GoBackButton } from "@/components/shared/go-back-button"
 import { GearImageGallery } from "../../_components/gear/GearImageGallery"
 import { RentNowPanel } from "../../_components/gear/RentNowPanel"
 import { ReviewItem } from "../../_components/gear/ReviewItem"
+import { GearCard } from "../../_components/gear/GearCard"
 import { Specifications } from "./_components/Specifications"
 import type { IGearItem, IReview } from "@/lib/types"
 
@@ -21,6 +22,21 @@ async function getGearById(id: string): Promise<IGearItem | null> {
   }
 }
 
+async function getRelatedGear(categoryId: string, currentId: string): Promise<IGearItem[]> {
+  try {
+    const res = await fetch(
+      `${API_URL}/api/gear?categoryId=${categoryId}&limit=5`,
+      { cache: "no-cache" }
+    )
+    if (!res.ok) return []
+    const json = await res.json()
+    const items: IGearItem[] = json.data ?? []
+    return items.filter((g) => g.id !== currentId).slice(0, 4)
+  } catch {
+    return []
+  }
+}
+
 export default async function GearDetailPage({
   params,
 }: {
@@ -30,6 +46,8 @@ export default async function GearDetailPage({
   const gear = await getGearById(id)
 
   if (!gear) notFound()
+
+  const related = await getRelatedGear(gear.categoryId, gear.id)
 
   const reviews = gear.reviews as IReview[] | undefined
   const avgRating = reviews?.length
@@ -131,6 +149,26 @@ export default async function GearDetailPage({
           <RentNowPanel gear={gear} />
         </div>
       </div>
+
+      {related.length > 0 && (
+        <section className="mt-16">
+          <div className="mb-8 flex items-end justify-between">
+            <div>
+              <h2 className="font-heading text-2xl font-bold tracking-tight">
+                Related Gear
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                More from {gear.category?.name ?? "this category"}
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {related.map((item) => (
+              <GearCard key={item.id} gear={item} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }
