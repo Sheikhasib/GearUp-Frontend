@@ -8,6 +8,7 @@ import {
   Receipt,
   ShieldCheck,
   Truck,
+  UserCircle,
 } from "@phosphor-icons/react"
 
 const CUSTOMER_SIDEBAR_ITEMS: ISidebarItem[] = [
@@ -25,6 +26,11 @@ const CUSTOMER_SIDEBAR_ITEMS: ISidebarItem[] = [
     label: "Payments",
     href: "/customer-dashboard/payments",
     icon: CreditCard,
+  },
+  {
+    label: "Profile",
+    href: "/profile",
+    icon: UserCircle,
   },
 ]
 
@@ -48,6 +54,11 @@ const PROVIDER_SIDEBAR_ITEMS: ISidebarItem[] = [
     label: "Add Gear",
     href: "/provider-dashboard/gear/new",
     icon: Plus,
+  },
+  {
+    label: "Profile",
+    href: "/profile",
+    icon: UserCircle,
   },
 ]
 
@@ -76,6 +87,11 @@ const ADMIN_SIDEBAR_ITEMS: ISidebarItem[] = [
     label: "Categories",
     href: "/admin-dashboard/categories",
     icon: FolderSimple,
+  },
+  {
+    label: "Profile",
+    href: "/profile",
+    icon: UserCircle,
   },
 ]
 
