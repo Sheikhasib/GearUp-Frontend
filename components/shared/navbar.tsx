@@ -30,6 +30,7 @@ import {
   Sun,
   Moon,
   List,
+  Question,
   X,
 } from "@phosphor-icons/react"
 import { useTheme } from "next-themes"
@@ -71,6 +72,7 @@ const dashboardHref: Record<IUser["role"], string> = {
 const userMenuItems = [
   { label: "Profile", href: "/profile", icon: User },
   { label: "Dashboard", action: "dashboard", icon: Gauge },
+  { label: "Help", href: "/help", icon: Question },
 ]
 
 export function Navbar({ user }: NavbarProps) {
