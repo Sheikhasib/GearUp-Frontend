@@ -86,8 +86,8 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-4">
-      <div className="flex-1 min-w-[200px]">
+      <div className="flex items-end gap-4 overflow-x-auto pb-1 [scrollbar-width:thin]">
+      <div className="flex-1 min-w-[160px]">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Search
         </label>
@@ -98,7 +98,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         />
       </div>
 
-      <div className="w-44">
+      <div className="w-36 shrink-0">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Category
         </label>
@@ -120,7 +120,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         </select>
       </div>
 
-      <div className="w-40">
+      <div className="w-32 shrink-0">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Brand
         </label>
@@ -142,7 +142,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         </select>
       </div>
 
-      <div className="w-40">
+      <div className="w-32 shrink-0">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Sort By
         </label>
@@ -150,8 +150,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
           value={`${params.sortBy || "createdAt"}:${params.sortOrder || "desc"}`}
           onChange={(e) => {
             const [sortBy, sortOrder] = e.target.value.split(":")
-            updateParam("sortBy", sortBy)
-            updateParam("sortOrder", sortOrder)
+            onParamsChange({ sortBy, sortOrder })
           }}
           className={cn(
             "h-10 w-full bg-transparent border-0 border-b border-b-input px-0 py-1 text-sm",
@@ -166,7 +165,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         </select>
       </div>
 
-      <div className="w-28">
+      <div className="w-20 shrink-0">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Min Price
         </label>
@@ -179,7 +178,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         />
       </div>
 
-      <div className="w-28">
+      <div className="w-20 shrink-0">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Max Price
         </label>
@@ -192,7 +191,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         />
       </div>
 
-      <div className="w-36">
+      <div className="w-32 shrink-0">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Avail. From
         </label>
@@ -204,7 +203,7 @@ export function GearFilters({ params, brands = [], onParamsChange }: GearFilters
         />
       </div>
 
-      <div className="w-36">
+      <div className="w-32 shrink-0">
         <label className="block text-[10px] font-semibold tracking-widest uppercase text-muted-foreground mb-1.5">
           Avail. To
         </label>
