@@ -20,8 +20,6 @@ const QUICK_LINKS = [
 const CustomerDashboardPage = async () => {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <CustomerDashboardClient />
-
       <div className="mb-8 flex items-center justify-between">
         <h1 className="font-heading text-3xl font-bold tracking-tight">
           Dashboard
@@ -50,6 +48,8 @@ const CustomerDashboardPage = async () => {
           </Link>
         ))}
       </div>
+
+      <CustomerDashboardClient />
     </div>
   )
 }
