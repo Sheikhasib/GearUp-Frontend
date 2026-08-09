@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/card"
 import { CardField } from "@/components/shared/card-field"
 import { GoBackButton } from "@/components/shared/go-back-button"
+import { ProfileForm } from "@/components/shared/ProfileForm"
+import { PasswordForm } from "@/components/shared/PasswordForm"
 import { SignIn, Gauge } from "@phosphor-icons/react/ssr"
 
 const ROLE_LABELS: Record<string, string> = {
@@ -99,36 +101,53 @@ const ProfilePage = async () => {
             >
               {USER_STATUS_LABELS[user.status] || user.status}
             </span>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="border-b">
-            <CardTitle>Profile Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <dl className="grid gap-6 sm:grid-cols-2">
-              <CardField label="Full Name">{user.name || "N/A"}</CardField>
-              <CardField label="Email">{user.email || "N/A"}</CardField>
-              <CardField label="Phone">{user.phone || "N/A"}</CardField>
-              <CardField label="Role">
-                {ROLE_LABELS[user.role] || user.role}
-              </CardField>
-              <CardField label="Member Since">
-                {formatJoinedAt(user.createdAt)}
-              </CardField>
-            </dl>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3 border-t pt-6">
-              <Button size="sm" asChild>
-                <Link href={ROLE_LINKS[user.role] || "/"}>
-                  <Gauge className="mr-1" />
-                  Dashboard
-                </Link>
-              </Button>
+            <div className="mt-2 w-full border-t pt-5">
+              <dl className="grid gap-4">
+                <CardField label="Role">
+                  {ROLE_LABELS[user.role] || user.role}
+                </CardField>
+                <CardField label="Member Since">
+                  {formatJoinedAt(user.createdAt)}
+                </CardField>
+              </dl>
             </div>
           </CardContent>
         </Card>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle>Profile Details</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <ProfileForm
+                defaultValues={{
+                  name: user.name,
+                  phone: user.phone,
+                  avatarUrl: user.avatarUrl,
+                }}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle>Change Password</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <PasswordForm />
+            </CardContent>
+          </Card>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="sm" asChild>
+              <Link href={ROLE_LINKS[user.role] || "/"}>
+                <Gauge className="mr-1" />
+                Dashboard
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   )
