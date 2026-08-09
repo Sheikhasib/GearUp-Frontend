@@ -2,8 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { SignIn } from "@phosphor-icons/react";
-import React, { useActionState, useEffect } from "react";
+import { SignIn, Eye, EyeSlash } from "@phosphor-icons/react";
+import React, { useActionState, useEffect, useState } from "react";
 import { loginAction } from "../_actions/authActions";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
@@ -19,6 +19,7 @@ const LoginForm = () => {
     loginAction.bind(null, redirectTo),
     { success: false, message: "" },
   );
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (registered) {
@@ -75,18 +76,29 @@ const LoginForm = () => {
           >
             Password
           </label>
-          <Input
-            id="login-password"
-            name="password"
-            type="password"
-            placeholder="Enter Your Password"
-            aria-invalid={Boolean(state?.errors?.password?.length)}
-            aria-describedby={
-              state?.errors?.password
-                ?.map((_, i) => `login-password-error-${i}`)
-                .join(" ") || undefined
-            }
-          />
+          <div className="relative">
+            <Input
+              id="login-password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter Your Password"
+              aria-invalid={Boolean(state?.errors?.password?.length)}
+              aria-describedby={
+                state?.errors?.password
+                  ?.map((_, i) => `login-password-error-${i}`)
+                  .join(" ") || undefined
+              }
+              className="pr-9"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-0 top-0 flex h-10 w-9 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {showPassword ? <EyeSlash size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
           {state?.errors?.password?.map((e, i) => (
             <p
               key={i}

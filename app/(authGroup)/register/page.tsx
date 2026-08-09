@@ -3,7 +3,14 @@ import Link from "next/link";
 import RegisterForm from "../_components/RegisterForm";
 import { GoBackButton } from "@/components/shared/go-back-button";
 
-export default function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const sp = await searchParams
+  const defaultRole = typeof sp.role === "string" ? sp.role : undefined
+
   return (
     <>
       <div className="relative flex min-h-screen items-center justify-center">
@@ -11,16 +18,16 @@ export default function RegisterPage() {
           <GoBackButton />
         </div>
         <div className="w-full max-w-md space-y-6 bg-card p-8 shadow-sm ring-1 ring-foreground/5">
-          {/* FORM GENERIC TEXTS */}
           <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-bold">Create an Account</h1>
-            <p className="text-gray-500">Fill in your details to get started</p>
+            <h1 className="font-heading text-3xl font-bold tracking-tight">
+              Create an Account
+            </h1>
+            <p className="text-muted-foreground">Fill in your details to get started</p>
           </div>
 
-          {/* FORM */}
-          <RegisterForm></RegisterForm>
+          <RegisterForm defaultRole={defaultRole} />
 
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link href="/login" className="font-medium text-primary hover:underline">
               Sign in
