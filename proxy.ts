@@ -11,6 +11,7 @@ const AUTH_ROUTES = ["/login", "/register"]
 const PUBLIC_ROUTES = [
   "/",
   "/gears",
+  "/categories",
   "/about",
   "/contact",
   "/services",
