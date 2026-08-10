@@ -2,7 +2,8 @@ import type { Icon } from "@phosphor-icons/react"
 
 export type Role = "CUSTOMER" | "PROVIDER" | "ADMIN"
 export type UserStatus = "ACTIVE" | "SUSPENDED"
-export type RentalStatus = "PLACED" | "CONFIRMED" | "PAID" | "PICKED_UP" | "RETURNED" | "CANCELLED"
+export type RentalStatus =
+  "PLACED" | "CONFIRMED" | "PAID" | "PICKED_UP" | "RETURNED" | "CANCELLED"
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "CANCELLED"
 
 export interface IUser {
@@ -139,4 +140,45 @@ export type ISidebarItem = {
   label: string
   href: string
   icon: Icon
+}
+
+export interface IAnalyticsOverview {
+  totalUsers?: number
+  totalGear: number
+  activeGear: number
+  totalRentals: number
+  totalRevenue: number
+  totalCategories?: number
+}
+
+export interface IOrdersByStatus {
+  status: string
+  count: number
+}
+
+export interface IRevenuePoint {
+  date: string
+  revenue: number
+}
+
+export interface IGearByCategory {
+  category: string
+  count: number
+}
+
+export interface IUsersByRole {
+  role: string
+  count: number
+}
+
+export interface IContactPayload {
+  name: string
+  email: string
+  subject: string
+  message: string
+}
+
+export interface IContactMessage extends IContactPayload {
+  id: string
+  createdAt: string
 }

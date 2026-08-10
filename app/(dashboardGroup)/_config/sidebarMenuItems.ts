@@ -1,5 +1,7 @@
 import { ISidebarItem } from "@/lib/types"
 import {
+  ChartLineUp,
+  ChatCircleText,
   CreditCard,
   FolderSimple,
   Gauge,
@@ -87,6 +89,16 @@ const ADMIN_SIDEBAR_ITEMS: ISidebarItem[] = [
     label: "Categories",
     href: "/admin-dashboard/categories",
     icon: FolderSimple,
+  },
+  {
+    label: "Analytics",
+    href: "/admin-dashboard/analytics",
+    icon: ChartLineUp,
+  },
+  {
+    label: "Messages",
+    href: "/admin-dashboard/messages",
+    icon: ChatCircleText,
   },
   {
     label: "Profile",
