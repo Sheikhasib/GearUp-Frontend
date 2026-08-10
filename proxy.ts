@@ -15,6 +15,8 @@ const PUBLIC_ROUTES = [
   "/contact",
   "/services",
   "/help",
+  "/privacy",
+  "/terms",
   "/payment/success",
   "/payment/cancel",
 ]

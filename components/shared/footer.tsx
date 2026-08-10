@@ -19,7 +19,10 @@ const columns = [
   },
   {
     title: "Support",
-    links: [{ label: "Contact", href: "/contact" }],
+    links: [
+      { label: "Help Center", href: "/help" },
+      { label: "Contact", href: "/contact" },
+    ],
   },
   {
     title: "Get Started",
@@ -81,15 +84,15 @@ export function Footer() {
         <div className="mt-12 flex flex-col gap-6 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2 text-sm text-muted-foreground">
             <a
-              href="mailto:support@gearup.example"
+              href="mailto:support@gearup.com"
               className="inline-flex items-center gap-2 transition-colors hover:text-primary"
             >
               <EnvelopeSimple size={16} />
-              support@gearup.example
+              support@gearup.com
             </a>
             <span className="inline-flex items-center gap-2">
               <Phone size={16} />
-              +1 (555) 010-2030
+              +880 1926-312799
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -109,7 +112,23 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t border-border pt-6 text-xs text-muted-foreground">
-          <p>&copy; {year} GearUp. All rights reserved.</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p>&copy; {year} GearUp. All rights reserved.</p>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/privacy"
+                className="transition-colors hover:text-primary"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="transition-colors hover:text-primary"
+              >
+                Terms
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Plus, Minus } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
-const faqs = [
+export const faqItems = [
   {
     question: "How do booking dates work?",
     answer:
@@ -46,7 +46,7 @@ export function FaqSection() {
         </p>
       </div>
       <div className="divide-y divide-border border-y border-border">
-        {faqs.map((faq, i) => {
+        {faqItems.map((faq, i) => {
           const open = openIndex === i
           return (
             <div key={faq.question}>
