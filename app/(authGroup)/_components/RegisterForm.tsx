@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { UserPlus, Eye, EyeSlash } from "@phosphor-icons/react";
-import React, { useActionState, useEffect, useState } from "react";
-import { registerAction } from "../_actions/authActions";
+import React, { useActionState, useTransition, useEffect, useState } from "react";
+import { registerAction, googleAuthAction } from "../_actions/authActions";
+import { GoogleLogin } from "@react-oauth/google";
+import type { CredentialResponse } from "@react-oauth/google";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +31,7 @@ const RegisterForm = ({ defaultRole }: RegisterFormProps) => {
   );
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [, startGoogle] = useTransition();
 
   useEffect(() => {
     if (!state?.message) return;
@@ -42,9 +45,25 @@ const RegisterForm = ({ defaultRole }: RegisterFormProps) => {
 
   const fieldError = (field: string) => state?.errors?.[field]?.[0];
 
+  const onGoogleSuccess = (res: CredentialResponse) => {
+    const idToken = res.credential;
+    if (!idToken) {
+      toast.error("Google sign-in was cancelled. Please try again.");
+      return;
+    }
+
+    startGoogle(async () => {
+      const stateResult = await googleAuthAction(idToken);
+      if (!stateResult.success) {
+        toast.error(stateResult.message);
+      }
+    });
+  };
+
   return (
-    <form action={action} className="space-y-4">
-      <Card className="p-5 space-y-4">
+    <div className="space-y-4">
+      <form action={action} className="space-y-4">
+        <Card className="p-5 space-y-4">
         <div className="space-y-1.5">
           <span className="block text-xs font-semibold tracking-widest uppercase text-muted-foreground">
             I want to
@@ -210,7 +229,32 @@ const RegisterForm = ({ defaultRole }: RegisterFormProps) => {
           {pending ? "Submitting..." : <><UserPlus className="mr-1" /> Register</>}
         </Button>
       </Card>
-    </form>
+      </form>
+
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex w-full items-center gap-3 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />
+          <span>OR continue with</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <GoogleLogin
+          onSuccess={onGoogleSuccess}
+          onError={() => toast.error("Google sign-in failed. Please try again.")}
+          useOneTap={false}
+          type="standard"
+          theme="outline"
+          size="large"
+          text="continue_with"
+          shape="rectangular"
+          width="100%"
+        />
+        <p className="text-center text-xs text-muted-foreground">
+          Google sign-up creates a <span className="font-medium">Customer</span> account.
+          Choose Provider and sign up with email if you want to rent out gear.
+        </p>
+      </div>
+    </div>
   );
 };
 

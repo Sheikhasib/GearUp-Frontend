@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/shared/navbar"
 import { getMe } from "@/service/getMe"
-import type { ReactNode } from "react"
+import { AuthProviders } from "./_components/AuthProviders"
 
 const AuthGrouplayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getMe()
@@ -8,7 +8,9 @@ const AuthGrouplayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
       <Navbar user={user} />
-      <div className="mx-auto max-w-7xl">{children}</div>
+      <div className="mx-auto max-w-7xl">
+        <AuthProviders>{children}</AuthProviders>
+      </div>
     </div>
   )
 }

@@ -12,6 +12,45 @@ export type AuthActionState = {
   errors?: Record<string, string[]>
 }
 
+type DemoRole = "CUSTOMER" | "PROVIDER" | "ADMIN"
+
+const setAuthCookies = async (accessToken: string, refreshToken: string) => {
+  const cookieStore = await cookies()
+
+  cookieStore.set("accessToken", accessToken, {
+    httpOnly: true,
+    maxAge: 60 * 60 * 24,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  })
+
+  cookieStore.set("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 60 * 60 * 24 * 7,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  })
+
+  cookieStore.set("accessTokenClient", accessToken, {
+    httpOnly: false,
+    maxAge: 60 * 60 * 24,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  })
+}
+
+const redirectByRole = (accessToken: string): never => {
+  const decodedToken = jwt.decode(accessToken) as JwtPayload
+
+  if (decodedToken.role === "ADMIN") {
+    redirect("/admin-dashboard")
+  } else if (decodedToken.role === "PROVIDER") {
+    redirect("/provider-dashboard")
+  } else {
+    redirect("/customer-dashboard")
+  }
+}
+
 export const loginAction = async (
   redirectTo: string,
   prevState: AuthActionState,
@@ -48,30 +87,8 @@ export const loginAction = async (
   }
 
   const { accessToken, refreshToken } = result.data
-  const cookieStore = await cookies()
 
-  cookieStore.set("accessToken", accessToken, {
-    httpOnly: true,
-    maxAge: 60 * 60 * 24,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-  })
-
-  cookieStore.set("refreshToken", refreshToken, {
-    httpOnly: true,
-    maxAge: 60 * 60 * 24 * 7,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-  })
-
-  cookieStore.set("accessTokenClient", accessToken, {
-    httpOnly: false,
-    maxAge: 60 * 60 * 24,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-  })
-
-  const decodedToken = jwt.decode(accessToken) as JwtPayload
+  await setAuthCookies(accessToken, refreshToken)
 
   if (
     redirectTo &&
@@ -82,13 +99,7 @@ export const loginAction = async (
     redirect(redirectTo)
   }
 
-  if (decodedToken.role === "ADMIN") {
-    redirect("/admin-dashboard")
-  } else if (decodedToken.role === "PROVIDER") {
-    redirect("/provider-dashboard")
-  } else {
-    redirect("/customer-dashboard")
-  }
+  return redirectByRole(accessToken)
 }
 
 export const registerAction = async (
@@ -140,4 +151,67 @@ export const logoutAction = async () => {
   cookieStore.delete("accessTokenClient")
   cookieStore.delete("refreshToken")
   redirect("/")
+}
+
+export const googleAuthAction = async (
+  idToken: string
+): Promise<AuthActionState> => {
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/google`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken }),
+    cache: "no-cache",
+  })
+
+  const result = await res.json()
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: result.message || "Google sign-in failed",
+    }
+  }
+
+  const { accessToken, refreshToken } = result.data
+
+  await setAuthCookies(accessToken, refreshToken)
+
+  return redirectByRole(accessToken)
+}
+
+export const demoLoginAction = async (
+  role: DemoRole
+): Promise<AuthActionState> => {
+  const email = process.env[`DEMO_${role}_EMAIL`]
+  const password = process.env[`DEMO_${role}_PASSWORD`]
+
+  if (!email || !password) {
+    return {
+      success: false,
+      message:
+        "Demo login is not configured. Please sign in with your account.",
+    }
+  }
+
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+    cache: "no-cache",
+  })
+
+  const result = await res.json()
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: result.message || "Demo login failed",
+    }
+  }
+
+  const { accessToken, refreshToken } = result.data
+
+  await setAuthCookies(accessToken, refreshToken)
+
+  return redirectByRole(accessToken)
 }
